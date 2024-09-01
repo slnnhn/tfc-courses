@@ -1,14 +1,19 @@
-'use client';
+"use client";
 
-import { Box, Container, Grid, Typography, Link } from '@mui/material';
+import { Box, Container, Grid, Typography, Link } from "@mui/material";
 
 export default function MainFooter() {
   return (
     <Box
       component="footer"
       sx={{
-        backgroundColor: (theme) => theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[800],
-        p: 6,
+        backgroundColor: theme => (theme.palette.mode === "light" ? theme.palette.grey[200] : theme.palette.grey[800]),
+        p: 2,
+        marginTop: "auto",
+        width: "100%",
+        bottom: 0,
+        left: 0,
+        position: "absolute",
       }}
     >
       <Container maxWidth="lg">
@@ -54,12 +59,12 @@ export default function MainFooter() {
         </Grid>
         <Box mt={5}>
           <Typography variant="body2" color="text.secondary" align="center">
-            {'Copyright © '}
+            {"Copyright © "}
             <Link color="inherit" href="https://teachforcambodia.org/">
               Teach For Cambodia
-            </Link>{' '}
+            </Link>{" "}
             {new Date().getFullYear()}
-            {'.'}
+            {"."}
           </Typography>
         </Box>
       </Container>
