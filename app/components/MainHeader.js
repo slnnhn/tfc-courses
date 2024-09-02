@@ -1,7 +1,6 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import Link from "next/link";
 import {
   AppBar,
   Toolbar,
@@ -19,17 +18,33 @@ import {
   Tab,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { createClient } from "../utils/supabase/client";
+const supabase = createClient();
+
+import { handleSignout } from "../login/actions";
 export default function MainHeader() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [language, setLanguage] = useState("en");
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const [tabValue, setTabValue] = useState(0);
+  const [user, setUser] = useState(null);
   const open = Boolean(anchorEl);
   const profileOpen = Boolean(profileAnchorEl);
+
+  useEffect(() => {
+    const getUser = async () => {
+      "use client";
+      const user = await supabase.auth.getUser();
+      console.log("user", user);
+      setUser(user.data);
+    };
+    getUser();
+  }, []);
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
@@ -102,18 +117,35 @@ export default function MainHeader() {
             <MenuItem value="km">ភាសាខ្មែរ</MenuItem>
           </Select>
         </FormControl>
-        <IconButton color="inherit">
+        {/* <IconButton color="inherit">
           <Badge badgeContent={4} color="error">
             <NotificationsIcon />
           </Badge>
-        </IconButton>
-
-        <Button
+        </IconButton> */}
+        {/* <Button
           color="inherit"
           onClick={handleProfileClick}
           startIcon={<Avatar sx={{ width: 32, height: 32 }}>U</Avatar>}
           endIcon={<KeyboardArrowDownIcon />}
-        ></Button>
+        ></Button> */}
+        {user && (
+          <Button
+            color="inherit"
+            variant="outlined"
+            sx={{ color: "white" }}
+            onClick={() => {
+              setUser(null);
+              handleSignout();
+            }}
+          >
+            Logout
+          </Button>
+        )}
+        <Link href="/login">
+          <Button color="inherit" variant="outlined" sx={{ color: "white" }}>
+            Login
+          </Button>
+        </Link>
         <Menu anchorEl={profileAnchorEl} open={profileOpen} onClose={handleProfileClose} sx={{ paddingRight: "2px" }}>
           <MenuItem onClick={handleProfileClose}>Profile</MenuItem>
           <MenuItem onClick={handleProfileClose}>My account</MenuItem>
