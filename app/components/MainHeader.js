@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -18,30 +19,30 @@ import {
   Tab,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import LoginIcon from "@mui/icons-material/Login";
-import LogoutIcon from "@mui/icons-material/Logout";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import { createClient } from "../utils/supabase/client";
+import { logout } from "../logout/actions";
+
 const supabase = createClient();
 
-import { handleSignout } from "../login/actions";
 export default function MainHeader() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [language, setLanguage] = useState("en");
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const [tabValue, setTabValue] = useState(0);
   const [user, setUser] = useState(null);
+
   const open = Boolean(anchorEl);
   const profileOpen = Boolean(profileAnchorEl);
 
   useEffect(() => {
     const getUser = async () => {
-      "use client";
-      const user = await supabase.auth.getUser();
-      console.log("user", user);
-      setUser(user.data);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUser(user);
     };
     getUser();
   }, []);
@@ -70,11 +71,14 @@ export default function MainHeader() {
     setTabValue(newValue);
   };
 
+  const handleLogout = async event => {
+    event.preventDefault();
+    await logout(); // Execute the logout action
+    setUser(null); // Reset the user state
+  };
+
   return (
-    <AppBar
-      position="static"
-      sx={{ paddingRight: "25px", paddingLeft: "25px", height: "70px", boxShadow: "none", backgroundColor: "" }}
-    >
+    <AppBar position="static" sx={{ paddingRight: "25px", paddingLeft: "25px", height: "70px", boxShadow: "none" }}>
       <Toolbar>
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
           Teach For Cambodia
@@ -117,39 +121,36 @@ export default function MainHeader() {
             <MenuItem value="km">ភាសាខ្មែរ</MenuItem>
           </Select>
         </FormControl>
-        {/* <IconButton color="inherit">
-          <Badge badgeContent={4} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton> */}
-        {/* <Button
-          color="inherit"
-          onClick={handleProfileClick}
-          startIcon={<Avatar sx={{ width: 32, height: 32 }}>U</Avatar>}
-          endIcon={<KeyboardArrowDownIcon />}
-        ></Button> */}
-        {user && (
-          <Button
-            color="inherit"
-            variant="outlined"
-            sx={{ color: "white" }}
-            onClick={() => {
-              setUser(null);
-              handleSignout();
-            }}
-          >
-            Logout
-          </Button>
+
+        {console.log("user", user)}
+        {user ? (
+          <>
+            <Button
+              color="inherit"
+              onClick={handleProfileClick}
+              startIcon={<Avatar sx={{ width: 32, height: 32 }} />}
+              endIcon={<KeyboardArrowDownIcon />}
+            >
+              {user.user_metadata.full_name.split(" ")[0]}
+            </Button>
+            <form onSubmit={handleLogout}>
+              <Button type="submit" color="inherit" variant="outlined" sx={{ color: "white" }}>
+                Logout
+              </Button>
+            </form>
+          </>
+        ) : (
+          <Link href="/login">
+            <Button color="inherit" variant="outlined" sx={{ color: "white" }}>
+              Login
+            </Button>
+          </Link>
         )}
-        <Link href="/login">
-          <Button color="inherit" variant="outlined" sx={{ color: "white" }}>
-            Login
-          </Button>
-        </Link>
+
         <Menu anchorEl={profileAnchorEl} open={profileOpen} onClose={handleProfileClose} sx={{ paddingRight: "2px" }}>
           <MenuItem onClick={handleProfileClose}>Profile</MenuItem>
           <MenuItem onClick={handleProfileClose}>My account</MenuItem>
-          <MenuItem onClick={handleProfileClose}>Logout</MenuItem>
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>
