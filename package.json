@@ -11,11 +11,13 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@google-cloud/translate": "^8.5.0",
     "@mui/icons-material": "^6.0.0",
     "@mui/material": "^6.0.0",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/ssr": "^0.5.1",
+    "@react-google-maps/api": "^2.19.3",
     "@supabase/supabase-js": "^2.45.3",
     "next": "14.2.6",
     "react": "^18",
