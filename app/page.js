@@ -1,16 +1,21 @@
 'use client';
 
 import { useState } from "react";
-import { AppBar, Tabs, Tab, Grid, Typography, Card, CardContent, Button, Box, Avatar, Paper, List, ListItem, ListItemText, Collapse, IconButton, LinearProgress, TextField, MenuItem, Select, InputAdornment } from "@mui/material";
+import { AppBar, Tabs, Tab, Grid, Typography, Card, CardContent, Button, Box, Avatar, Paper, List, ListItem, ListItemText, Collapse, IconButton, LinearProgress, TextField, MenuItem, Select, InputAdornment, Container } from "@mui/material";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
-
+import Link from 'next/link';
+import GoogleMapComponent from './components/googlemaps';
+import MembersSection from './components/MembersSection';
+import CourseDisplay from './components/CourseDisplay';
+import CourseUpload from './components/CourseUpload';
 // Styled components
 const WhiteAppBar = styled(AppBar)({
   backgroundColor: 'white',
   boxShadow: 'none',
   borderBottom: '1px solid #e0e0e0',
+  marginTop: '30px', // Add this line to create space above the AppBar
 });
 
 const StyledTab = styled(Tab)({
@@ -258,7 +263,7 @@ export default function Home() {
               )}
             </CourseInfo>
             <CourseActions>
-              <ActionButton variant="contained" color="primary">
+              <ActionButton variant="contained" color="primary" component={Link} href="/coursecontent">
                 {isProgress ? "Continue" : "Review"}
               </ActionButton>
               {isProgress && (
@@ -373,8 +378,18 @@ export default function Home() {
         );
       case 2: // Discussion tab
         return <DiscussionForum />;
-      case 3: // Contact tab
-        return <Typography variant="h4">Contact Us</Typography>;
+      case 3: // Community tab
+        return (
+          <>
+            <Typography variant="h4" gutterBottom>My Community</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <MembersSection />
+              <GoogleMapComponent />
+              <CourseDisplay />
+              <CourseUpload />
+            </Box>
+          </>
+        );
       default:
         return null;
     }
@@ -382,25 +397,27 @@ export default function Home() {
 
   return (
     <ThemeProvider theme={theme}>
-      <WhiteAppBar position="static">
-        <Tabs 
-          value={tabValue} 
-          onChange={handleTabChange} 
-          indicatorColor="primary"
-          textColor="primary"
-          variant="standard"
-          sx={{ 
-            '& .MuiTabs-flexContainer': { justifyContent: 'flex-start' },
-            paddingLeft: '50px',
-            paddingRight: '50px'
-          }}
-        >
-          <StyledTab label="Home" />
-          <StyledTab label="My Learning" />
-          <StyledTab label="Discussion" />
-          <StyledTab label="Contact" />
-        </Tabs>
-      </WhiteAppBar>
+      <Box sx={{ paddingTop: '100px' }}>
+        <WhiteAppBar position="static">
+          <Tabs 
+            value={tabValue} 
+            onChange={handleTabChange} 
+            indicatorColor="primary"
+            textColor="primary"
+            variant="standard"
+            sx={{ 
+              '& .MuiTabs-flexContainer': { justifyContent: 'flex-start' },
+              paddingLeft: '50px',
+              paddingRight: '50px'
+            }}
+          >
+            <StyledTab label="Home" />
+            <StyledTab label="My Learning" />
+            <StyledTab label="Discussion" />
+            <StyledTab label="Community" />
+          </Tabs>
+        </WhiteAppBar>
+      </Box>
       
       <main style={{ padding: '20px 50px' }}>
         {renderTabContent()}
