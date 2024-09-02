@@ -1,6 +1,18 @@
 "use client";
 
 import { Box, Container, Grid, Typography, Link } from "@mui/material";
+import { styled } from "@mui/material/styles";
+
+const FooterLink = styled(Link)(({ theme }) => ({
+  display: "block",
+  marginBottom: theme.spacing(1),
+}));
+
+const FooterSection = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-start",
+}));
 
 export default function MainFooter() {
   return (
@@ -17,16 +29,16 @@ export default function MainFooter() {
       }}
     >
       <Container maxWidth="lg">
-        <Grid container spacing={5}>
-          <Grid item xs={12} sm={4}>
+        <Grid container spacing={8} justifyContent="space-between">
+          <FooterSection item xs={12} sm={3}>
             <Typography variant="h6" color="text.primary" gutterBottom>
               About Us
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Teach For Cambodia is dedicated to providing quality education and opportunities for all.
             </Typography>
-          </Grid>
-          <Grid item xs={12} sm={4}>
+          </FooterSection>
+          <FooterSection item xs={12} sm={4}>
             <Typography variant="h6" color="text.primary" gutterBottom>
               Contact Us
             </Typography>
@@ -39,23 +51,21 @@ export default function MainFooter() {
             <Typography variant="body2" color="text.secondary">
               Phone: +855 23 456 789
             </Typography>
-          </Grid>
-          <Grid item xs={12} sm={4}>
+          </FooterSection>
+          <FooterSection item xs={12} sm={3}>
             <Typography variant="h6" color="text.primary" gutterBottom>
               Follow Us
             </Typography>
-            <Link href="https://www.facebook.com/" color="inherit">
+            <FooterLink href="https://www.facebook.com/" color="inherit">
               Facebook
-            </Link>
-            <br />
-            <Link href="https://www.instagram.com/" color="inherit">
+            </FooterLink>
+            <FooterLink href="https://www.instagram.com/" color="inherit">
               Instagram
-            </Link>
-            <br />
-            <Link href="https://www.twitter.com/" color="inherit">
+            </FooterLink>
+            <FooterLink href="https://www.twitter.com/" color="inherit">
               Twitter
-            </Link>
-          </Grid>
+            </FooterLink>
+          </FooterSection>
         </Grid>
         <Box mt={5}>
           <Typography variant="body2" color="text.secondary" align="center">
