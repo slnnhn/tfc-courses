@@ -1,5 +1,5 @@
 "use client";
-import { use, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AppBar,
   Tabs,
@@ -27,6 +27,7 @@ import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import { createClient } from "../utils/supabase/client";
+import { useUser } from "../context/UserContext";
 // Styled components
 const WhiteAppBar = styled(AppBar)({
   backgroundColor: "white",
@@ -117,12 +118,12 @@ const ExpandMore = styled(props => {
 }));
 
 // Mock data for new courses
-const newCourses = [
-  { id: 1, title: "Effective Classroom Management", category: "Teaching" },
-  { id: 2, title: "Leadership in Education", category: "Professional Development" },
-  { id: 3, title: "Inclusive Teaching Strategies", category: "Teaching" },
-  { id: 4, title: "Data-Driven Decision Making in Education", category: "Professional Development" },
-];
+// const newCourses = [
+//   { id: 1, title: "Effective Classroom Management", category: "Teaching" },
+//   { id: 2, title: "Leadership in Education", category: "Professional Development" },
+//   { id: 3, title: "Inclusive Teaching Strategies", category: "Teaching" },
+//   { id: 4, title: "Data-Driven Decision Making in Education", category: "Professional Development" },
+// ];
 
 // Mock data for recently viewed courses
 const recentCourses = [
@@ -188,6 +189,19 @@ export default function DashboardPage() {
   const [discussionTabValue, setDiscussionTabValue] = useState(0);
   const [selectedTopic, setSelectedTopic] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [courses, setCourses] = useState([]);
+  const supabase = createClient();
+  const user = useUser();
+
+  const fetchCourses = async () => {
+    const { data, error } = await supabase.from("courses").select("*");
+    console.log("data is", data);
+    if (error) console.log("error", error);
+    else setCourses(data);
+  };
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -377,7 +391,7 @@ export default function DashboardPage() {
       case 0: // Home tab
         return (
           <>
-            <CourseSection title="New Courses" courses={newCourses} />
+            <CourseSection title="New Courses" courses={courses} />
             <CourseSection title="Recently Viewed Courses" courses={recentCourses} />
           </>
         );

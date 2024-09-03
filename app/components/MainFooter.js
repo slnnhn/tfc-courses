@@ -25,7 +25,7 @@ export default function MainFooter() {
         width: "100%",
         bottom: 0,
         left: 0,
-        position: "absolute",
+        position: "static",
       }}
     >
       <Container maxWidth="lg">

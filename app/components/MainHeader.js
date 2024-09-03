@@ -281,7 +281,6 @@ export default function MainHeader() {
           </Select>
         </FormControl>
 
-        {console.log("user", user)}
         {user ? (
           <>
             <Button
