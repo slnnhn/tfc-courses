@@ -21,11 +21,8 @@ export default function MainFooter() {
       sx={{
         backgroundColor: theme => (theme.palette.mode === "light" ? theme.palette.grey[200] : theme.palette.grey[800]),
         p: 2,
-        marginTop: "auto",
+        mt: 'auto', // Changed from marginTop to mt
         width: "100%",
-        bottom: 0,
-        left: 0,
-        position: "absolute",
       }}
     >
       <Container maxWidth="lg">
