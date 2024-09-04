@@ -23,6 +23,10 @@ export default function MainFooter() {
         p: 2,
         mt: 'auto', // Changed from marginTop to mt
         width: "100%",
+        bottom: 0,
+        left: 0,
+        position: "static",
+
       }}
     >
       <Container maxWidth="lg">
