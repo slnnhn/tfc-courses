@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, List, ListItem, IconButton, Paper, Divider, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import { Box, Typography, TextField, Button, List, ListItem, IconButton, Paper, Divider, MenuItem, Select, FormControl, InputLabel, Chip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -9,6 +9,7 @@ const CourseUpload = () => {
   const [courseTitle, setCourseTitle] = useState('');
   const [courseDescription, setCourseDescription] = useState('');
   const [provider, setProvider] = useState('');
+  const [courseFor, setCourseFor] = useState([]); // Changed to array for multiple selections
   const [progress, setProgress] = useState({
     videosLeft: 0,
     readingsLeft: 0,
@@ -105,7 +106,7 @@ const CourseUpload = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log({ courseTitle, courseDescription, provider, progress, modules });
+    console.log({ courseTitle, courseDescription, provider, courseFor, progress, modules });
     // Here you would typically send the data to your backend
   };
 
@@ -141,6 +142,25 @@ const CourseUpload = () => {
             margin="normal"
             required
           />
+          <FormControl fullWidth margin="normal" required>
+            <InputLabel>Course For</InputLabel>
+            <Select
+              multiple
+              value={courseFor}
+              onChange={(e) => setCourseFor(e.target.value)}
+              label="Course For"
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} />
+                  ))}
+                </Box>
+              )}
+            >
+              <MenuItem value="Staff">Staff</MenuItem>
+              <MenuItem value="Fellow">Fellow</MenuItem>
+            </Select>
+          </FormControl>
         </Paper>
 
         <Paper elevation={3} sx={{ padding: 3, marginBottom: 3 }}>

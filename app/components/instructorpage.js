@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography, Grid, Paper, Button, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { Box, Typography, Grid, Paper, Button, List, ListItem, ListItemText, Divider, Chip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Link from 'next/link';
 
@@ -22,9 +22,9 @@ const StyledLink = styled(Link)({
 
 // Mock data
 const courses = [
-  { id: 1, title: 'Introduction to React', students: 120, rating: 4.5 },
-  { id: 2, title: 'Advanced JavaScript Concepts', students: 85, rating: 4.7 },
-  { id: 3, title: 'Web Design Fundamentals', students: 200, rating: 4.2 },
+  { id: 1, title: 'Introduction to React', students: 120, rating: 4.5, for: ['Staff', 'Fellow'] },
+  { id: 2, title: 'Advanced JavaScript Concepts', students: 85, rating: 4.7, for: ['Staff'] },
+  { id: 3, title: 'Web Design Fundamentals', students: 200, rating: 4.2, for: ['Fellow'] },
 ];
 
 const recentActivities = [
@@ -47,7 +47,25 @@ export default function InstructorDashboard() {
                   <ListItem>
                     <ListItemText
                       primary={course.title}
-                      secondary={`Students: ${course.students} | Rating: ${course.rating}`}
+                      secondary={
+                        <React.Fragment>
+                          <Typography component="span" variant="body2" color="text.primary">
+                            Students: {course.students} | Rating: {course.rating}
+                          </Typography>
+                          <br />
+                          <Typography component="span" variant="body2" color="text.secondary">
+                            Course For: 
+                          </Typography>
+                          {course.for.map((role) => (
+                            <Chip 
+                              key={role} 
+                              label={role} 
+                              size="small" 
+                              sx={{ ml: 0.5, mr: 0.5 }}
+                            />
+                          ))}
+                        </React.Fragment>
+                      }
                     />
                   </ListItem>
                   <Divider />
