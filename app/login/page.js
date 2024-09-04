@@ -4,7 +4,7 @@ import { Box, Typography, Button } from "@mui/material";
 
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { createClient } from "../utils/supabase";
+import { createClient } from "../utils/supabase/server";
 
 export default function LoginPage() {
   const signIn = async e => {
@@ -12,7 +12,6 @@ export default function LoginPage() {
     const supabase = createClient();
     const origin = headers().get("origin");
 
-    console.log("origin", origin);
     const { error, data } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {

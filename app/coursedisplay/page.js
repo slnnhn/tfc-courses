@@ -1,3 +1,5 @@
+"use client";  // Add this line at the top of the file
+
 import React, { useState, useRef } from 'react';
 import { Box, Typography, TextField, Button, List, ListItem, ListItemIcon, ListItemText, Collapse, Accordion, AccordionSummary, AccordionDetails, Divider } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';

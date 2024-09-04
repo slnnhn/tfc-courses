@@ -1,9 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import MainHeader from './components/MainHeader';
-import MainFooter from './components/MainFooter';
-import { Box } from '@mui/material';
-
+import MainHeader from "./components/MainHeader";
+import MainFooter from "./components/MainFooter";
+import { Box } from "@mui/material";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -17,9 +16,9 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100vh',
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "100vh",
           }}
         >
           <MainHeader />
