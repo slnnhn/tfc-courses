@@ -196,6 +196,7 @@ export default function DashboardPage() {
     if (error) console.log("error", error);
     else setCourses(data);
   };
+
   useEffect(() => {
     fetchCourses();
   }, []);
