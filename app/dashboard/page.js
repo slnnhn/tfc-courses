@@ -27,7 +27,6 @@ import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import { createClient } from "../utils/supabase/client";
-import { useUser } from "../context/UserContext";
 // Styled components
 const WhiteAppBar = styled(AppBar)({
   backgroundColor: "white",
@@ -191,11 +190,9 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [courses, setCourses] = useState([]);
   const supabase = createClient();
-  const user = useUser();
 
   const fetchCourses = async () => {
     const { data, error } = await supabase.from("courses").select("*");
-    console.log("data is", data);
     if (error) console.log("error", error);
     else setCourses(data);
   };

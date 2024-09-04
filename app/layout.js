@@ -3,7 +3,6 @@ import "./globals.css";
 import MainHeader from "./components/MainHeader";
 import MainFooter from "./components/MainFooter";
 import { Box } from "@mui/material";
-import { UserProvider } from "./context/UserContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -23,11 +22,9 @@ export default function RootLayout({ children }) {
           }}
         >
           <MainHeader />
-          <UserProvider>
-            <Box component="main" sx={{ flexGrow: 1 }}>
-              {children}
-            </Box>
-          </UserProvider>
+          <Box component="main" sx={{ flexGrow: 1 }}>
+            {children}
+          </Box>
           <MainFooter />
         </Box>
       </body>

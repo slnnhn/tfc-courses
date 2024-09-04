@@ -21,13 +21,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
 import { createClient } from "../utils/supabase/client";
-import { logout } from "../logout/actions";
-
-const supabase = createClient();
+import { handleSignout } from "../logout/actions";
 
 // =======
 // import React, { useState, useEffect } from 'react';
 import { styled } from "@mui/material/styles";
+import { useRouter } from "next/navigation";
 // import { AppBar, Toolbar, Typography, Button, InputBase, IconButton, Select, MenuItem, FormControl, Menu, Avatar, Badge, Popover, List, ListItem, ListItemText, Box } from '@mui/material';
 // import SearchIcon from '@mui/icons-material/Search';
 // import LanguageIcon from '@mui/icons-material/Language';
@@ -122,6 +121,7 @@ import { styled } from "@mui/material/styles";
 //   marginRight: theme.spacing(2),
 // }));
 // >>>>>>> Salen-branch
+const supabase = createClient();
 
 export default function MainHeader() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -130,7 +130,7 @@ export default function MainHeader() {
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const [tabValue, setTabValue] = useState(0);
   const [user, setUser] = useState(null);
-
+  const router = useRouter();
   const open = Boolean(anchorEl);
   const profileOpen = Boolean(profileAnchorEl);
 
@@ -139,11 +139,30 @@ export default function MainHeader() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+      console.log(user);
 
-      setUser(user);
+      if (user) {
+        setUser(user);
+      } else {
+        console.log("no user");
+      }
     };
     getUser();
   }, []);
+
+  //   return () => subscription.unsubscribe();
+  // }, []);
+
+  // useEffect(() => {
+  //   // const getUser = async () => {
+  //   //   const {
+  //   //     data: { user },
+  //   //   } = await supabase.auth.getUser();
+
+  //   //   setUser(user);
+  //   // };
+  //   // getUser();
+  // }, []);
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
@@ -232,8 +251,18 @@ export default function MainHeader() {
 
   const handleLogout = async event => {
     event.preventDefault();
-    await logout(); // Execute the logout action
-    setUser(null); // Reset the user state
+
+    const response = await handleSignout();
+
+    if (!response.error) {
+      setUser(null);
+      // Update client-side state to reflect that the user is logged out
+      // setUser(null); // Assuming `setUser` is available in your component
+    } else {
+      // Handle any errors
+      console.error(response.message);
+    }
+    router.push("/");
   };
 
   return (
