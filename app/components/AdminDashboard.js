@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -18,39 +18,40 @@ import {
   Tabs,
   Tab,
   Grid,
-} from '@mui/material';
+} from "@mui/material";
+import { createClient } from "../utils/supabase/client";
 
 // Mock data for courses
-const initialCourses = [
-  { id: 1, title: 'Introduction to React', students: 150, status: 'Active', for: ['Staff', 'Fellow'] },
-  { id: 2, title: 'Advanced JavaScript', students: 120, status: 'Active', for: ['Staff'] },
-  { id: 3, title: 'Python for Beginners', students: 200, status: 'Inactive', for: ['Fellow'] },
-];
+// const initialCourses = [
+//   { id: 1, title: "Introduction to React", students: 150, status: "Active", for: ["Staff", "Fellow"] },
+//   { id: 2, title: "Advanced JavaScript", students: 120, status: "Active", for: ["Staff"] },
+//   { id: 3, title: "Python for Beginners", students: 200, status: "Inactive", for: ["Fellow"] },
+// ];
 
 // Mock data for users
 const initialUsers = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', access: 'None' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', access: 'Instructor' },
-  { id: 3, name: 'Bob Johnson', email: 'bob@example.com', access: 'Staff' },
+  { id: 1, name: "John Doe", email: "john@example.com", access: "None" },
+  { id: 2, name: "Jane Smith", email: "jane@example.com", access: "Instructor" },
+  { id: 3, name: "Bob Johnson", email: "bob@example.com", access: "Staff" },
 ];
 
-const courseForOptions = ['Staff', 'Fellow'];
-const accessLevels = ['Guest', 'Fellow', 'Staff', 'Instructor'];
+const courseForOptions = ["Staff", "Fellow"];
+const accessLevels = ["Guest", "Fellow", "Staff", "Instructor"];
 
 // Mock Google Analytics data
 const mockAnalyticsData = {
   pageViews: 10000,
   uniqueVisitors: 5000,
-  averageSessionDuration: '00:03:45',
-  bounceRate: '45%',
+  averageSessionDuration: "00:03:45",
+  bounceRate: "45%",
 };
 
 const AdminDashboard = () => {
-  const [courses, setCourses] = useState(initialCourses);
+  const [courses, setCourses] = useState([]);
   const [users, setUsers] = useState(initialUsers);
   const [tabValue, setTabValue] = useState(0);
   const [analyticsData, setAnalyticsData] = useState(null);
-
+  const supabase = createClient();
   useEffect(() => {
     // Simulating API call to Google Analytics
     const fetchAnalyticsData = async () => {
@@ -59,20 +60,28 @@ const AdminDashboard = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       setAnalyticsData(mockAnalyticsData);
     };
-
     fetchAnalyticsData();
   }, []);
 
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    const response = await supabase.from("courses").select("*").limit(10);
+    if (response.error) {
+      console.error("Error fetching courses:", response.error.message);
+    } else {
+      console.log("respones", response);
+      setCourses(response.data);
+    }
+  };
   const handleCourseForChange = (courseId, newValue) => {
-    setCourses(courses.map(course =>
-      course.id === courseId ? { ...course, for: newValue } : course
-    ));
+    setCourses(courses.map(course => (course.id === courseId ? { ...course, for: newValue } : course)));
   };
 
   const handleAccessChange = (userId, newAccess) => {
-    setUsers(users.map(user =>
-      user.id === userId ? { ...user, access: newAccess } : user
-    ));
+    setUsers(users.map(user => (user.id === userId ? { ...user, access: newAccess } : user)));
   };
 
   const handleTabChange = (event, newValue) => {
@@ -95,7 +104,6 @@ const AdminDashboard = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>ID</TableCell>
                   <TableCell>Title</TableCell>
                   <TableCell>Students</TableCell>
                   <TableCell>Status</TableCell>
@@ -104,32 +112,33 @@ const AdminDashboard = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {courses.map((course) => (
+                {courses.map(course => (
                   <TableRow key={course.id}>
-                    <TableCell>{course.id}</TableCell>
                     <TableCell>{course.title}</TableCell>
                     <TableCell>{course.students}</TableCell>
                     <TableCell>{course.status}</TableCell>
                     <TableCell>
                       <FormControl fullWidth>
-                        <Select
+                        {/* <Select
                           multiple
                           value={course.for}
-                          onChange={(e) => handleCourseForChange(course.id, e.target.value)}
+                          onChange={e => handleCourseForChange(course.id, e.target.value)}
                           size="small"
-                          renderValue={(selected) => selected.join(', ')}
-                        >
-                          {courseForOptions.map((option) => (
+                          renderValue={selected => selected.join(", ")}
+                        > */}
+                        {/* {courseForOptions.map(option => (
                             <MenuItem key={option} value={option}>
                               {option}
                             </MenuItem>
-                          ))}
-                        </Select>
+                          ))} */}
+                        {/* </Select> */}
                       </FormControl>
                     </TableCell>
                     <TableCell>
                       <Button size="small">Edit</Button>
-                      <Button size="small" color="error">Delete</Button>
+                      <Button size="small" color="error">
+                        Delete
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -152,7 +161,7 @@ const AdminDashboard = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.map((user) => (
+                {users.map(user => (
                   <TableRow key={user.id}>
                     <TableCell>{user.id}</TableCell>
                     <TableCell>{user.name}</TableCell>
@@ -161,18 +170,22 @@ const AdminDashboard = () => {
                       <FormControl fullWidth>
                         <Select
                           value={user.access}
-                          onChange={(e) => handleAccessChange(user.id, e.target.value)}
+                          onChange={e => handleAccessChange(user.id, e.target.value)}
                           size="small"
                         >
-                          {accessLevels.map((level) => (
-                            <MenuItem key={level} value={level}>{level}</MenuItem>
+                          {accessLevels.map(level => (
+                            <MenuItem key={level} value={level}>
+                              {level}
+                            </MenuItem>
                           ))}
                         </Select>
                       </FormControl>
                     </TableCell>
                     <TableCell>
                       <Button size="small">Edit</Button>
-                      <Button size="small" color="error">Delete</Button>
+                      <Button size="small" color="error">
+                        Delete
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -183,29 +196,31 @@ const AdminDashboard = () => {
       )}
       {tabValue === 2 && (
         <Paper sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom>Analytics</Typography>
+          <Typography variant="h6" gutterBottom>
+            Analytics
+          </Typography>
           {analyticsData ? (
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={3}>
-                <Paper sx={{ p: 2, textAlign: 'center' }}>
+                <Paper sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="h6">{analyticsData.pageViews}</Typography>
                   <Typography variant="body2">Page Views</Typography>
                 </Paper>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Paper sx={{ p: 2, textAlign: 'center' }}>
+                <Paper sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="h6">{analyticsData.uniqueVisitors}</Typography>
                   <Typography variant="body2">Unique Visitors</Typography>
                 </Paper>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Paper sx={{ p: 2, textAlign: 'center' }}>
+                <Paper sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="h6">{analyticsData.averageSessionDuration}</Typography>
                   <Typography variant="body2">Avg. Session Duration</Typography>
                 </Paper>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Paper sx={{ p: 2, textAlign: 'center' }}>
+                <Paper sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="h6">{analyticsData.bounceRate}</Typography>
                   <Typography variant="body2">Bounce Rate</Typography>
                 </Paper>
