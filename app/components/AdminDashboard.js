@@ -29,11 +29,11 @@ import { createClient } from "../utils/supabase/client";
 // ];
 
 // Mock data for users
-const initialUsers = [
-  { id: 1, name: "John Doe", email: "john@example.com", access: "None" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", access: "Instructor" },
-  { id: 3, name: "Bob Johnson", email: "bob@example.com", access: "Staff" },
-];
+// const initialUsers = [
+//   { id: 1, name: "John Doe", email: "john@example.com", access: "None" },
+//   { id: 2, name: "Jane Smith", email: "jane@example.com", access: "Instructor" },
+//   { id: 3, name: "Bob Johnson", email: "bob@example.com", access: "Staff" },
+// ];
 
 const courseForOptions = ["Staff", "Fellow"];
 const accessLevels = ["Guest", "Fellow", "Staff", "Instructor"];
@@ -48,7 +48,7 @@ const mockAnalyticsData = {
 
 const AdminDashboard = () => {
   const [courses, setCourses] = useState([]);
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
   const [tabValue, setTabValue] = useState(0);
   const [analyticsData, setAnalyticsData] = useState(null);
   const supabase = createClient();
@@ -65,8 +65,18 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchCourses();
+    fetchUsers();
   }, []);
 
+  const fetchUsers = async () => {
+    const response = await supabase.from("users").select("*").limit(10);
+    if (response.error) {
+      console.error("Error fetching users:", response.error.message);
+    } else {
+      console.log("response", response);
+      setUsers(response.data);
+    }
+  };
   const fetchCourses = async () => {
     const response = await supabase.from("courses").select("*").limit(10);
     if (response.error) {
@@ -153,7 +163,6 @@ const AdminDashboard = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>ID</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Access Control</TableCell>
@@ -163,8 +172,9 @@ const AdminDashboard = () => {
               <TableBody>
                 {users.map(user => (
                   <TableRow key={user.id}>
-                    <TableCell>{user.id}</TableCell>
-                    <TableCell>{user.name}</TableCell>
+                    <TableCell>
+                      {user.firstName} {user.lastName}
+                    </TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
                       <FormControl fullWidth>
@@ -173,11 +183,11 @@ const AdminDashboard = () => {
                           onChange={e => handleAccessChange(user.id, e.target.value)}
                           size="small"
                         >
-                          {accessLevels.map(level => (
+                          {/* {accessLevels.map(level => (
                             <MenuItem key={level} value={level}>
                               {level}
                             </MenuItem>
-                          ))}
+                          ))} */}
                         </Select>
                       </FormControl>
                     </TableCell>
