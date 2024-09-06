@@ -140,6 +140,7 @@ export default function MainHeader() {
         data: { user },
       } = await supabase.auth.getUser();
 
+      console.log("user", user);
       if (user) {
         setUser(user);
       } else {
@@ -317,7 +318,7 @@ export default function MainHeader() {
               startIcon={<Avatar sx={{ width: 32, height: 32 }} />}
               endIcon={<KeyboardArrowDownIcon />}
             >
-              {user.user_metadata.full_name.split(" ")[0]}
+              {user?.user_metadata?.full_name?.split(" ")[0]}
             </Button>
             <form onSubmit={handleLogout}>
               <Button type="submit" color="inherit" variant="outlined" sx={{ color: "white" }}>
