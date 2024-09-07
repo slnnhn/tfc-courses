@@ -15,7 +15,10 @@ const style = {
   p: 4,
 };
 
-export default function ReusableModal({ open, handleClose, title, description, handleDelete }) {
+export default function ReusableModal({ open, handleClose, selectedCourse, selectedUser, handleDelete }) {
+  const { title, description } = selectedCourse || {};
+  const { firstName, lastName, email } = selectedUser || {};
+
   return (
     <Modal open={open} onClose={handleClose}>
       <Box
@@ -34,16 +37,18 @@ export default function ReusableModal({ open, handleClose, title, description, h
         }}
       >
         <Typography id="modal-modal-title" variant="h4" component="h4" textAlign={"center"} fontWeight={"bold"}>
-          Are you sure you want to delete this course?
+          Are you sure you want to delete this {title ? "course" : "users"} details?
         </Typography>
-        <Typography variant="h5" sx={{ mt: 2, mb: 2 }}>
-          {title}
-        </Typography>
-        <Typography variant="h5" sx={{ mt: 2, mb: 2 }}>
-          {description}
-        </Typography>
+        {firstName && (
+          <Typography variant="h5" sx={{ mt: 2, mb: 2 }}>
+            {firstName} {lastName}
+          </Typography>
+        )}
 
-        <Box sx={{ mr: 5 }} display={"flex"} justifyContent={"center"}>
+        <Typography variant="h5" sx={{ mt: 2, mb: 2 }}>
+          {description ? description : email}
+        </Typography>
+        <Box display={"flex"} justifyContent={"center"}>
           <Button onClick={handleClose} variant="outlined" sx={{ mr: 2 }}>
             Cancel
           </Button>

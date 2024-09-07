@@ -53,6 +53,7 @@ const AdminDashboard = () => {
   const [tabValue, setTabValue] = useState(0);
   const [analyticsData, setAnalyticsData] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [open, setOpen] = useState(false);
   const supabase = createClient();
   useEffect(() => {
@@ -99,6 +100,24 @@ const AdminDashboard = () => {
     setTabValue(newValue);
   };
 
+  const handleClose = () => {
+    setSelectedCourse(null);
+    setSelectedCourse(null);
+    setOpen(false);
+  };
+  const handleDeleteUser = async () => {
+    console.log("dlete triggered~!!!!");
+    //await deleteiiong
+
+    const { data, error } = await supabase.from("users").delete().match({ id: selectedUser.id });
+
+    if (error) {
+      console.error("Error deleting user:", error.message);
+    } else {
+      setOpen(false);
+      setSelectedUser(null);
+    }
+  };
   const handleDelete = async () => {
     console.log("dlete triggered~!!!!");
     //await deleteiiong
@@ -109,12 +128,19 @@ const AdminDashboard = () => {
       console.error("Error deleting course:", error.message);
     } else {
       setOpen(false);
-      selectedCourse(null);
+      setSelectedCourse(null);
     }
   };
   return (
     <Box sx={{ padding: 3 }}>
-      <Modal open={open} handleClose={() => setOpen(false)} {...selectedCourse} handleDelete={handleDelete} />
+      <Modal
+        open={open}
+        handleClose={handleClose}
+        selectedCourse={selectedCourse}
+        selectedUser={selectedUser}
+        handleDelete={handleDelete}
+        handleDeleteUser={handleDeleteUser}
+      />
       <Typography variant="h4" gutterBottom>
         Admin Dashboard
       </Typography>
@@ -215,7 +241,14 @@ const AdminDashboard = () => {
                     </TableCell>
                     <TableCell>
                       <Button size="small">Edit</Button>
-                      <Button size="small" color="error" onClick={() => console.log("delte clicked")}>
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => {
+                          setOpen(true);
+                          setSelectedUser(user);
+                        }}
+                      >
                         Delete
                       </Button>
                     </TableCell>

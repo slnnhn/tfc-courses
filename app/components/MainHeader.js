@@ -140,7 +140,6 @@ export default function MainHeader() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      console.log("user", user);
       if (user) {
         setUser(user);
       } else {
