@@ -271,6 +271,8 @@ export default function MainHeader() {
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
           Teach For Cambodia
         </Typography>
+        <Link href="/allcourses"> All Courses</Link>
+        <Link href="/allcourses"> Admin Page</Link>
         <Button color="inherit" onClick={handleClick} endIcon={<KeyboardArrowDownIcon />}>
           Explore
         </Button>
@@ -279,7 +281,7 @@ export default function MainHeader() {
           <MenuItem onClick={handleClose}>Option 2</MenuItem>
           <MenuItem onClick={handleClose}>Option 3</MenuItem>
         </Menu>
-        <div style={{ position: "relative", marginLeft: "50px", marginRight: "px" }}>
+        {/* <div style={{ position: "relative", marginLeft: "50px", marginRight: "px" }}>
           <div
             style={{ position: "absolute", display: "flex", alignItems: "center", height: "100%", padding: "0 10px" }}
           >
@@ -295,7 +297,7 @@ export default function MainHeader() {
               borderRadius: "4px",
             }}
           />
-        </div>
+        </div> */}
         <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
           <Select
             value={language}

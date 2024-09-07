@@ -390,7 +390,7 @@ export default function DashboardPage() {
         return (
           <>
             <CourseSection title="New Courses" courses={courses} />
-            <CourseSection title="Recently Viewed Courses" courses={recentCourses} />
+            {/* <CourseSection title="Recently Viewed Courses" courses={recentCourses} /> */}
           </>
         );
       case 1: // My Learning tab

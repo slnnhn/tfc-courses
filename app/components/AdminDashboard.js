@@ -20,7 +20,8 @@ import {
   Grid,
 } from "@mui/material";
 import { createClient } from "../utils/supabase/client";
-
+import Modal from "./Modal";
+import { SetMeal } from "@mui/icons-material";
 // Mock data for courses
 // const initialCourses = [
 //   { id: 1, title: "Introduction to React", students: 150, status: "Active", for: ["Staff", "Fellow"] },
@@ -51,6 +52,8 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [tabValue, setTabValue] = useState(0);
   const [analyticsData, setAnalyticsData] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [open, setOpen] = useState(false);
   const supabase = createClient();
   useEffect(() => {
     // Simulating API call to Google Analytics
@@ -73,7 +76,6 @@ const AdminDashboard = () => {
     if (response.error) {
       console.error("Error fetching users:", response.error.message);
     } else {
-      console.log("response", response);
       setUsers(response.data);
     }
   };
@@ -82,7 +84,6 @@ const AdminDashboard = () => {
     if (response.error) {
       console.error("Error fetching courses:", response.error.message);
     } else {
-      console.log("respones", response);
       setCourses(response.data);
     }
   };
@@ -98,8 +99,22 @@ const AdminDashboard = () => {
     setTabValue(newValue);
   };
 
+  const handleDelete = async () => {
+    console.log("dlete triggered~!!!!");
+    //await deleteiiong
+
+    const { data, error } = await supabase.from("courses").delete().match({ id: selectedCourse.id });
+
+    if (error) {
+      console.error("Error deleting course:", error.message);
+    } else {
+      setOpen(false);
+      selectedCourse(null);
+    }
+  };
   return (
     <Box sx={{ padding: 3 }}>
+      <Modal open={open} handleClose={() => setOpen(false)} {...selectedCourse} handleDelete={handleDelete} />
       <Typography variant="h4" gutterBottom>
         Admin Dashboard
       </Typography>
@@ -146,7 +161,14 @@ const AdminDashboard = () => {
                     </TableCell>
                     <TableCell>
                       <Button size="small">Edit</Button>
-                      <Button size="small" color="error">
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => {
+                          setSelectedCourse(course);
+                          setOpen(true);
+                        }}
+                      >
                         Delete
                       </Button>
                     </TableCell>
@@ -193,7 +215,7 @@ const AdminDashboard = () => {
                     </TableCell>
                     <TableCell>
                       <Button size="small">Edit</Button>
-                      <Button size="small" color="error">
+                      <Button size="small" color="error" onClick={() => console.log("delte clicked")}>
                         Delete
                       </Button>
                     </TableCell>
