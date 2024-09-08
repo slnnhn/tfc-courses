@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+
 import {
   AppBar,
   Tabs,
@@ -22,11 +23,13 @@ import {
   MenuItem,
   Select,
   InputAdornment,
+  Pagination,
 } from "@mui/material";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import { createClient } from "../utils/supabase/client";
+import { useRouter } from "next/navigation";
 // Styled components
 const WhiteAppBar = styled(AppBar)({
   backgroundColor: "white",
@@ -125,12 +128,12 @@ const ExpandMore = styled(props => {
 // ];
 
 // Mock data for recently viewed courses
-const recentCourses = [
-  { id: 1, title: "Differentiated Instruction Techniques", category: "Teaching" },
-  { id: 2, title: "Educational Technology Integration", category: "Professional Development" },
-  { id: 3, title: "Formative Assessment Strategies", category: "Teaching" },
-  { id: 4, title: "Building Professional Learning Communities", category: "Professional Development" },
-];
+// const recentCourses = [
+//   { id: 1, title: "Differentiated Instruction Techniques", category: "Teaching" },
+//   { id: 2, title: "Educational Technology Integration", category: "Professional Development" },
+//   { id: 3, title: "Formative Assessment Strategies", category: "Teaching" },
+//   { id: 4, title: "Building Professional Learning Communities", category: "Professional Development" },
+// ];
 
 // Mock data for in-progress courses
 const inProgressCourses = [
@@ -182,6 +185,7 @@ const discussionTopics = [
 const theme = createTheme();
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [tabValue, setTabValue] = useState(0);
   const [learningTabValue, setLearningTabValue] = useState(0);
   const [expandedId, setExpandedId] = useState(-1);
@@ -189,14 +193,31 @@ export default function DashboardPage() {
   const [selectedTopic, setSelectedTopic] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [courses, setCourses] = useState([]);
+  const [curUser, setCurUser] = useState(null);
   const supabase = createClient();
 
+  const getUserData = async () => {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (!user) {
+      router.push("/login");
+    }
+    if (error) {
+      console.log("error", error);
+      return;
+    }
+    setCurUser(user);
+  };
   const fetchCourses = async () => {
     const { data, error } = await supabase.from("courses").select("*");
     if (error) console.log("error", error);
     else setCourses(data);
   };
+
   useEffect(() => {
+    getUserData();
     fetchCourses();
   }, []);
 
@@ -251,34 +272,51 @@ export default function DashboardPage() {
     </Paper>
   );
 
-  const CourseSection = ({ title, courses }) => (
-    <>
-      <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
-        {title}
-      </Typography>
-      <Grid container spacing={4}>
-        {courses.map(course => (
-          <Grid item key={course.id} xs={12} sm={6} md={3}>
-            <StyledCard>
-              <StyledCardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                  {course.title}
-                </Typography>
-                <Button size="small" color="primary">
-                  View Course
-                </Button>
-              </StyledCardContent>
-            </StyledCard>
-          </Grid>
-        ))}
-      </Grid>
-      <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 2 }}>
-        <Button variant="outlined" color="primary" onClick={() => handleViewMore(title)}>
-          View More
-        </Button>
-      </Box>
-    </>
-  );
+  const CourseSection = ({ title, courses }) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const coursesPerPage = 20;
+
+    // Logic to calculate the index of the first and last course on the current page
+    const indexOfLastCourse = currentPage * coursesPerPage;
+    const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
+    const currentCourses = courses.slice(indexOfFirstCourse, indexOfLastCourse);
+
+    // Logic to handle page change
+    const handlePageChange = (event, page) => {
+      setCurrentPage(page);
+    };
+
+    return (
+      <>
+        <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
+          {title}
+        </Typography>
+        <Grid container spacing={4}>
+          {currentCourses.map(course => (
+            <Grid item key={course.id} xs={12} sm={6} md={3}>
+              <StyledCard>
+                <StyledCardContent>
+                  <Typography gutterBottom variant="h6" component="div">
+                    {course.title}
+                  </Typography>
+                  <Button size="small" color="primary">
+                    View Course
+                  </Button>
+                </StyledCardContent>
+              </StyledCard>
+            </Grid>
+          ))}
+        </Grid>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <Pagination
+            count={Math.ceil(courses.length / coursesPerPage)}
+            page={currentPage}
+            onChange={handlePageChange}
+          />
+        </Box>
+      </>
+    );
+  };
 
   const CourseList = ({ courses, isProgress = false }) => (
     <Box>
@@ -389,7 +427,9 @@ export default function DashboardPage() {
         return (
           <>
             <CourseSection title="New Courses" courses={courses} />
-            <CourseSection title="Recently Viewed Courses" courses={recentCourses} />
+            <Grid container spacing={4}>
+              {/* Remove course cards display */}
+            </Grid>
           </>
         );
       case 1: // My Learning tab
