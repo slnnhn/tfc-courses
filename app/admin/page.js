@@ -6,13 +6,17 @@ import AdminDashboard from '../components/AdminDashboard';
 //import { Box, Typography } from '@mui/material';
 
 const AdminPage = () => {
+  const [editingRow, setEditingRow] = React.useState(null); // Track the row being edited
+
+  const handleEdit = (rowId) => {
+    setEditingRow(rowId); // Set the row to edit
+  };
+
   return (
-    // <Box sx={{ padding: 3 }}>
-    //   <Typography variant="h3" gutterBottom>
-    //     Admin Area
-    //   </Typography>
-      <AdminDashboard />
-    // </Box>
+    <>
+      <AdminDashboard onEdit={handleEdit} editingRow={editingRow} />
+    </>
+
   );
 };
 

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+
 import {
   AppBar,
   Tabs,
@@ -125,12 +126,12 @@ const ExpandMore = styled(props => {
 // ];
 
 // Mock data for recently viewed courses
-const recentCourses = [
-  { id: 1, title: "Differentiated Instruction Techniques", category: "Teaching" },
-  { id: 2, title: "Educational Technology Integration", category: "Professional Development" },
-  { id: 3, title: "Formative Assessment Strategies", category: "Teaching" },
-  { id: 4, title: "Building Professional Learning Communities", category: "Professional Development" },
-];
+// const recentCourses = [
+//   { id: 1, title: "Differentiated Instruction Techniques", category: "Teaching" },
+//   { id: 2, title: "Educational Technology Integration", category: "Professional Development" },
+//   { id: 3, title: "Formative Assessment Strategies", category: "Teaching" },
+//   { id: 4, title: "Building Professional Learning Communities", category: "Professional Development" },
+// ];
 
 // Mock data for in-progress courses
 const inProgressCourses = [
@@ -258,7 +259,7 @@ export default function DashboardPage() {
         {title}
       </Typography>
       <Grid container spacing={4}>
-        {courses.map(course => (
+        {courses.slice(0,4).map(course => (
           <Grid item key={course.id} xs={12} sm={6} md={3}>
             <StyledCard>
               <StyledCardContent>
@@ -390,7 +391,11 @@ export default function DashboardPage() {
         return (
           <>
             <CourseSection title="New Courses" courses={courses} />
-            {/* <CourseSection title="Recently Viewed Courses" courses={recentCourses} /> */}
+            <Grid container spacing={4}>
+      {/* Remove course cards display */}
+          
+    </Grid>
+
           </>
         );
       case 1: // My Learning tab
