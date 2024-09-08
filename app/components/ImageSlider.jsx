@@ -7,24 +7,39 @@ const ImageSlider = () => {
     {
       image: "/img1.jpg",
       title: "Teach For Cambodia",
-      description:
-        "One day, all children in Cambodia will attain an excellent education.",
+      description: "One day, all children in Cambodia will attain an excellent education.",
+      btn1Title: "Learn More",
+      btn1Href: "",
+      btn2Title: "Apply Now",
+      btn2Href: "/login",
     },
     {
       image: "/img2.jpg",
       title: "Our mission",
       description: "Enlist and develop the nation's most promising future leaders to expand educational opportunities for children all across Cambodia.",
+      btn1Title: "What We Do",
+      btn1Href: "",
+      btn2Title: "Become A Fellow",
+      btn2Href: "/login",
     },
     {
       image: "/img3.jpg",
       title: "Who we are",
       description: "We are homegrown, independent non-profit organiztion partnered with the Ministry of Education, Youth and Sport of Cambodia to increase educational opportunities in the country.",
+      btn1Title: "Learn More",
+      btn1Href: "",
+      btn2Title: "Become A Fellow",
+      btn2Href: "/login",
     },
     {
       image: "/img4.jpg",
       title: "Get Involved",
-      description: "Help us transform the lives and opportunities in Cambodia"
-    }
+      description: "Help us transform the lives and opportunities in Cambodia",
+      btn1Title: "Find Our Work",
+      btn1Href: "",
+      btn2Title: "Become A Fellow",
+      btn2Href: "/login",
+    },
   ];
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -81,19 +96,28 @@ const ImageSlider = () => {
           {slides[currentSlide].title}
         </Typography>
         <Typography variant="h6">{slides[currentSlide].description}</Typography>
-        {/* <Box mt={3}>
+        <Box mt={3}>
           <Button
             variant="contained"
             color="primary"
             size="large"
             sx={{ marginRight: "10px" }}
+            href={slides[currentSlide].btn1Href}
+            passHref
           >
-            Learn More
+            {slides[currentSlide].btn1Title}
           </Button>
-          <Button variant="outlined" color="secondary" size="large">
-            Apply Now
+          <Button 
+            variant="outlined" 
+            bgcolor="secondary" 
+            color="white" 
+            size="large"
+            href={slides[currentSlide].btn2Href}
+            passHref
+          >
+            {slides[currentSlide].btn2Title}
           </Button>
-        </Box> */}
+        </Box>
       </Box>
 
       <Button
@@ -104,8 +128,8 @@ const ImageSlider = () => {
           top: "50%",
           transform: "translateY(-50%)",
           color: "white",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          minWidth: "50px",
+          // backgroundColor: "rgba(0, 0, 0, 0.5)",
+          minWidth: "100px",
         }}
       >
         <ArrowBackIos />
@@ -119,8 +143,8 @@ const ImageSlider = () => {
           top: "50%",
           transform: "translateY(-50%)",
           color: "white",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          minWidth: "50px",
+          // backgroundColor: "rgba(0, 0, 0, 0.5)",
+          minWidth: "100px",
         }}
       >
         <ArrowForwardIos />
