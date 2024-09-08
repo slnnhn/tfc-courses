@@ -16,6 +16,7 @@ import {
   Avatar,
   Tabs,
   Tab,
+  Box,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -37,25 +38,24 @@ import { useRouter } from "next/navigation";
 // import { useRouter } from 'next/navigation';
 // //import { useLanguage } from '../contexts/LanguageContext';
 
-// // Styled components
-// const WhiteAppBar = styled(AppBar)(({ theme }) => ({
-//   backgroundColor: 'white',
-//   color: theme.palette.text.primary, // This will use the default dark text color
-//   boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2)', // Optional: adds a subtle shadow
-// }));
+// Styled components
+const WhiteAppBar = styled(AppBar)(({ theme }) => ({
+  backgroundColor: 'white',
+  color: theme.palette.text.primary, // This will use the default dark text color
+  boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2)', // Optional: adds a subtle shadow
+}));
 
-// const PaddedToolbar = styled(Toolbar)(({ theme }) => ({
-//   padding: '0 50px',
-//   width: '100%',
-//   boxSizing: 'border-box',
-// }));
+const LogoContainer = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  cursor: 'pointer',
+});
 
-// const ContentWrapper = styled('div')({
-//   display: 'flex',
-//   alignItems: 'center',
-//   justifyContent: 'space-between',
-//   width: '100%',
-// });
+const StyledLogo = styled('img')({
+  width: 'auto', // Maintain aspect ratio
+  height: '110px', // Increased height for a bigger logo
+  marginRight: '10px',
+});
 
 // const Search = styled('div')(({ theme }) => ({
 //   position: 'relative',
@@ -124,7 +124,7 @@ import { useRouter } from "next/navigation";
 const supabase = createClient();
 
 export default function MainHeader() {
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [language, setLanguage] = useState("en");
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
@@ -192,12 +192,12 @@ export default function MainHeader() {
     // >>>>>>> Salen-branch
   };
 
-  const handleSearchSubmit = event => {
-    event.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-    }
-  };
+  // const handleSearchSubmit = event => {
+  //   event.preventDefault();
+  //   if (searchQuery.trim()) {
+  //     router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  //   }
+  // };
   const handleClose = () => {
     console.log("close");
   };
@@ -266,36 +266,18 @@ export default function MainHeader() {
   };
 
   return (
-    <AppBar position="static" sx={{ paddingRight: "25px", paddingLeft: "25px", height: "70px", boxShadow: "none" }}>
+    <WhiteAppBar position="static" sx={{ paddingRight: "25px", paddingLeft: "25px", height: "70px", boxShadow: "none" }}>
       <Toolbar>
-        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          Teach For Cambodia
-        </Typography>
-        <Button color="inherit" onClick={handleClick} endIcon={<KeyboardArrowDownIcon />}>
-          Explore
-        </Button>
-        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-          <MenuItem onClick={handleClose}>Option 1</MenuItem>
-          <MenuItem onClick={handleClose}>Option 2</MenuItem>
-          <MenuItem onClick={handleClose}>Option 3</MenuItem>
-        </Menu>
-        <div style={{ position: "relative", marginLeft: "50px", marginRight: "px" }}>
-          <div
-            style={{ position: "absolute", display: "flex", alignItems: "center", height: "100%", padding: "0 10px" }}
-          >
-            <SearchIcon />
-          </div>
-          <InputBase
-            placeholder="Search…"
-            inputProps={{ "aria-label": "search" }}
-            style={{
-              paddingLeft: "40px",
-              color: "inherit",
-              backgroundColor: "rgba(255, 255, 255, 0.15)",
-              borderRadius: "4px",
-            }}
+        <LogoContainer onClick={handleLogoClick}>
+          <StyledLogo
+            src="/logo1.jpg" // Updated to use logo1.jpg
+            alt="Teach For Cambodia Logo"
+            width={50}
+            height={50}
           />
-        </div>
+        </LogoContainer>
+        <Box sx={{ flexGrow: 1 }} /> {/* This will push the following items to the right */}
+        
         <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
           <Select
             value={language}
@@ -321,26 +303,29 @@ export default function MainHeader() {
               {user.user_metadata.full_name.split(" ")[0]}
             </Button>
             <form onSubmit={handleLogout}>
-              <Button type="submit" color="inherit" variant="outlined" sx={{ color: "white" }}>
+              <Button type="submit" variant="contained" sx={{ backgroundColor: "lightblue", color: "black" }}>
                 Logout
               </Button>
             </form>
+            <Menu anchorEl={profileAnchorEl} open={profileOpen} onClose={handleProfileClose} sx={{ paddingRight: "2px" }}>
+              <MenuItem onClick={() => { handleProfileClose(); router.push('/profile'); }}>
+                Profile
+              </MenuItem>
+              <MenuItem onClick={() => { handleProfileClose(); router.push('/settings'); }}>
+                Settings
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
           </>
         ) : (
           <Link href="/login">
-            <Button color="inherit" variant="outlined" sx={{ color: "white" }}>
+            <Button color="inherit" variant="outlined" sx={{ color: "black", borderColor: "black", backgroundColor: "lightblue" }}>
               Login
             </Button>
           </Link>
         )}
-
-        <Menu anchorEl={profileAnchorEl} open={profileOpen} onClose={handleProfileClose} sx={{ paddingRight: "2px" }}>
-          <MenuItem onClick={handleProfileClose}>Profile</MenuItem>
-          <MenuItem onClick={handleProfileClose}>My account</MenuItem>
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
-        </Menu>
       </Toolbar>
-    </AppBar>
+    </WhiteAppBar>
 
     // =======
     //     <WhiteAppBar position="static">

@@ -13,7 +13,7 @@
     "@emotion/styled": "^11.13.0",
     "@google-cloud/translate": "^8.5.0",
     "@mui/icons-material": "^6.0.0",
-    "@mui/material": "^6.0.0",
+    "@mui/material": "^6.0.2",
     "@react-google-maps/api": "^2.19.3",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/auth-ui-react": "^0.4.7",

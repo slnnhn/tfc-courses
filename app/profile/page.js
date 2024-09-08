@@ -10,12 +10,14 @@ import Link from 'next/link';
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    role: 'Teacher',
-    school: 'Springfield High School',
+    firstName: 'Salen',  // Changed from name to firstName
+    lastName: 'Nhean',    // Added lastName
+    email: 'salen@example.com',
+    role: 'Computer Teacher',
+    school: 'ChroyChangvar High School',
     avatar: 'https://source.unsplash.com/random/150x150',
-    bio: 'Passionate educator with 10 years of experience in secondary education. Specializing in mathematics and physics.',
+    bio: 'Passionate educator with 10 years of experience in secondary education. Specializing in coding and physics.',
+    interest: 'I love learning new things and snacking often. We will become instant friends if you share your snacks with me.',
   });
   const [courses, setCourses] = useState([]);
 
@@ -71,18 +73,49 @@ export default function Profile() {
             </Grid>
             <Grid item xs={12} sm={8} md={9}>
               {isEditing ? (
-                <TextField
-                  fullWidth
-                  name="name"
-                  label="Name"
-                  value={user.name}
-                  onChange={handleChange}
-                  margin="normal"
-                />
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <TextField
+                      fullWidth
+                      name="lastName"  // Updated name
+                      label="Last Name"
+                      value={user.lastName}  // Updated value
+                      onChange={handleChange}
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      fullWidth
+                      name="firstName"  // Updated name
+                      label="First Name"
+                      value={user.firstName}  // Updated value
+                      onChange={handleChange}
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>  
+                    <TextField
+                      fullWidth
+                      name="email"  // Added email field
+                      label="Email"
+                      value={user.email}  // Bind to user email
+                      onChange={handleChange}
+                      margin="normal"
+                    />
+                  </Grid>
+                </Grid>
               ) : (
-                <Typography variant="h4" gutterBottom>
-                  {user.name}
-                </Typography>
+                <Grid container alignItems="center">
+                  <Typography variant="h4" gutterBottom>
+                    {user.lastName}, {user.firstName}  
+                  </Typography>
+                  <Box sx={{ ml: 3, padding: '1px 6px', backgroundColor: 'gold', borderRadius: '6px', mt: -1.5 }}>
+                    <Typography variant="body1" fontWeight="bold">
+                      {user.role === 'Role' ? 'Role' : 'Guest'}  
+                    </Typography>
+                  </Box>
+                </Grid>
               )}
               <Typography variant="subtitle1" color="text.secondary" gutterBottom>
                 {user.email}
@@ -102,7 +135,7 @@ export default function Profile() {
                 </Typography>
               )}
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <SchoolIcon sx={{ mr: 1 }} />
+                {/* <SchoolIcon sx={{ mr: 1 }} />  // Removed school logo */}
                 {isEditing ? (
                   <TextField
                     fullWidth
@@ -142,7 +175,29 @@ export default function Profile() {
               </Typography>
             )}
           </Box>
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              My Interests
+            </Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="Interest"
+                label="Interest"
+                value={user.interest}
+                onChange={handleChange}
+                multiline
+                rows={4}
+                margin="normal"
+              />
+            ) : (
+              <Typography variant="body1" paragraph>
+                {user.interest}
+              </Typography>
+            )}
+          </Box>
 
+          {/* 
           <Box sx={{ mt: 3 }}>
             <Typography variant="h6" gutterBottom>
               Courses Enrolled
@@ -175,7 +230,8 @@ export default function Profile() {
               </Typography>
             )}
           </Box>
-
+          */}
+          
           <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
             {isEditing ? (
               <Button variant="contained" onClick={handleSave}>
