@@ -136,8 +136,10 @@ export default function LoginPage() {
 
             <form action={signUpWithEmail}>
               <Box mb={2}>
-                <InputLabel htmlFor="name">Full Name</InputLabel>
-                <TextField id="name" type="text" placeholder="Time Jones" required fullWidth />
+                <InputLabel htmlFor="firstName">First Name</InputLabel>
+                <TextField id="firstName" type="text" placeholder="first name" required fullWidth />
+                <InputLabel htmlFor="lastName">Last Name</InputLabel>
+                <TextField id="lastName" type="text" placeholder="last name" required fullWidth />
               </Box>
               <Box mb={2}>
                 <InputLabel htmlFor="email">Email</InputLabel>

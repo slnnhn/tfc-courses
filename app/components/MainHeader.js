@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   AppBar,
   Toolbar,
@@ -16,17 +15,19 @@ import {
   Avatar,
   Tabs,
   Tab,
+  Box,
+  Link,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
 import { createClient } from "../utils/supabase/client";
 import { handleSignout } from "../logout/actions";
-
 // =======
 // import React, { useState, useEffect } from 'react';
 import { styled } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
+import { red } from "@mui/material/colors";
 // import { AppBar, Toolbar, Typography, Button, InputBase, IconButton, Select, MenuItem, FormControl, Menu, Avatar, Badge, Popover, List, ListItem, ListItemText, Box } from '@mui/material';
 // import SearchIcon from '@mui/icons-material/Search';
 // import LanguageIcon from '@mui/icons-material/Language';
@@ -270,8 +271,26 @@ export default function MainHeader() {
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
           Teach For Cambodia
         </Typography>
-        <Link href="/allcourses"> All Courses</Link>
-        <Link href="/allcourses"> Admin Page</Link>
+        <Box sx={{ mr: 2, textDecoration: "none", color: "red" }} color={"inherit"}>
+          <Link href="/admin" color={"inherit"}>
+            Admin
+          </Link>
+          <Link href="/allcourses" color={"inherit"}>
+            {" "}
+            All Courses
+          </Link>
+          <Link href="/dashboard" color={"inherit"}>
+            {" "}
+            Dashboard{" "}
+          </Link>
+          <Link href="/instructor" color={"inherit"}>
+            {" "}
+            Instructors{" "}
+          </Link>
+          <Link href="/form" color={"inherit"}>
+            Form{" "}
+          </Link>
+        </Box>
         <Button color="inherit" onClick={handleClick} endIcon={<KeyboardArrowDownIcon />}>
           Explore
         </Button>
@@ -328,11 +347,18 @@ export default function MainHeader() {
             </form>
           </>
         ) : (
-          <Link href="/login">
-            <Button color="inherit" variant="outlined" sx={{ color: "white" }}>
-              Login
-            </Button>
-          </Link>
+          <>
+            <Link href="/login">
+              <Button color="inherit" variant="outlined" sx={{ color: "white" }}>
+                Login
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button color="inherit" variant="outlined" sx={{ color: "white" }}>
+                Sign up
+              </Button>
+            </Link>
+          </>
         )}
 
         <Menu anchorEl={profileAnchorEl} open={profileOpen} onClose={handleProfileClose} sx={{ paddingRight: "2px" }}>

@@ -27,6 +27,7 @@ import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import { createClient } from "../utils/supabase/client";
+import { useRouter } from "next/navigation";
 // Styled components
 const WhiteAppBar = styled(AppBar)({
   backgroundColor: "white",
@@ -182,6 +183,7 @@ const discussionTopics = [
 const theme = createTheme();
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [tabValue, setTabValue] = useState(0);
   const [learningTabValue, setLearningTabValue] = useState(0);
   const [expandedId, setExpandedId] = useState(-1);
@@ -189,8 +191,23 @@ export default function DashboardPage() {
   const [selectedTopic, setSelectedTopic] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [courses, setCourses] = useState([]);
+  const [curUser, setCurUser] = useState(null);
   const supabase = createClient();
 
+  const getUserData = async () => {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (!user) {
+      router.push("/login");
+    }
+    if (error) {
+      console.log("error", error);
+      return;
+    }
+    setCurUser(user);
+  };
   const fetchCourses = async () => {
     const { data, error } = await supabase.from("courses").select("*");
     if (error) console.log("error", error);
@@ -198,6 +215,7 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
+    getUserData();
     fetchCourses();
   }, []);
 
