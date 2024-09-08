@@ -1,10 +1,13 @@
+
 'use client';
 
 import React, { useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, CardMedia, Checkbox, FormGroup, FormControlLabel, Paper } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, CardMedia, Checkbox, FormGroup, Button, FormControlLabel, Paper } from '@mui/material';
 import { mockCourses } from '../coursecontent';
 
 export default function AllCourses() {
+  const [courses, setCourses] = useState([]);
+  const [seeMore, setSeeMore] = useState(false);
   const [levelFilters, setLevelFilters] = useState({
     beginner: false,
     intermediate: false,
@@ -42,6 +45,9 @@ export default function AllCourses() {
 
     return levelMatch && topicMatch;
   });
+
+  // Display only the first 8 courses initially
+  const coursesToShow = seeMore ? filteredCourses : filteredCourses.slice(0, 8);
 
   return (
     <Box sx={{ flexGrow: 1, p: 3, mt: '40px' }}> 
@@ -102,7 +108,7 @@ export default function AllCourses() {
         {/* Course grid */}
         <Grid item xs={12} md={9}>
           <Grid container spacing={3}>
-            {filteredCourses.map((course) => (
+            {coursesToShow.map((course) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={course.id}>
                 <Card>
                   <CardMedia
@@ -126,6 +132,15 @@ export default function AllCourses() {
               </Grid>
             ))}
           </Grid>
+
+          {/* "See More" Button */}
+          {filteredCourses.length > 8 && !seeMore && (
+            <Box textAlign="center" sx={{ mt: 4 }}>
+              <Button variant="contained" onClick={() => setSeeMore(true)}>
+                See More
+              </Button>
+            </Box>
+          )}
         </Grid>
       </Grid>
     </Box>

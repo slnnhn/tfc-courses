@@ -432,20 +432,22 @@
 import { Typography, Button } from "@mui/material";
 import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
+import ImageSlider from "./components/ImageSlider";
 export default function Home() {
   const router = useRouter();
   return (
     <div>
-      <Typography variant="h1">Home Page</Typography>
+      <ImageSlider />
+      {/* <Typography variant="h1">Home Page</Typography> */}
 
-      <Button
+      {/* <Button
         onClick={() => {
           router.push("/login");
         }}
         variant="outlined"
       >
         Login
-      </Button>
+      </Button> */}
     </div>
   );
 }
