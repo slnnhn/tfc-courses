@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   AppBar,
   Toolbar,
@@ -17,17 +16,18 @@ import {
   Tabs,
   Tab,
   Box,
+  Link,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LanguageIcon from "@mui/icons-material/Language";
 import { createClient } from "../utils/supabase/client";
 import { handleSignout } from "../logout/actions";
-
 // =======
 // import React, { useState, useEffect } from 'react';
 import { styled } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
+import { red } from "@mui/material/colors";
 // import { AppBar, Toolbar, Typography, Button, InputBase, IconButton, Select, MenuItem, FormControl, Menu, Avatar, Badge, Popover, List, ListItem, ListItemText, Box } from '@mui/material';
 // import SearchIcon from '@mui/icons-material/Search';
 // import LanguageIcon from '@mui/icons-material/Language';
@@ -40,21 +40,21 @@ import { useRouter } from "next/navigation";
 
 // Styled components
 const WhiteAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor: 'white',
+  backgroundColor: "white",
   color: theme.palette.text.primary, // This will use the default dark text color
-  boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2)', // Optional: adds a subtle shadow
+  boxShadow: "0px 2px 4px -1px rgba(0,0,0,0.2)", // Optional: adds a subtle shadow
 }));
 
 const LogoContainer = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  cursor: 'pointer',
+  display: "flex",
+  alignItems: "center",
+  cursor: "pointer",
 });
 
-const StyledLogo = styled('img')({
-  width: 'auto', // Maintain aspect ratio
-  height: '110px', // Increased height for a bigger logo
-  marginRight: '10px',
+const StyledLogo = styled("img")({
+  width: "auto", // Maintain aspect ratio
+  height: "110px", // Increased height for a bigger logo
+  marginRight: "10px",
 });
 
 // const Search = styled('div')(({ theme }) => ({
@@ -265,7 +265,10 @@ export default function MainHeader() {
   };
 
   return (
-    <WhiteAppBar position="static" sx={{ paddingRight: "25px", paddingLeft: "25px", height: "70px", boxShadow: "none" }}>
+    <WhiteAppBar
+      position="static"
+      sx={{ paddingRight: "25px", paddingLeft: "25px", height: "70px", boxShadow: "none" }}
+    >
       <Toolbar>
         <LogoContainer onClick={handleLogoClick}>
           <StyledLogo
@@ -276,10 +279,26 @@ export default function MainHeader() {
           />
         </LogoContainer>
         <Box sx={{ flexGrow: 1 }} /> {/* This will push the following items to the right */}
-        
-
-        <Link href="/allcourses"> All Courses</Link>
-        <Link href="/allcourses"> Admin Page</Link>
+        <Box sx={{ mr: 2, textDecoration: "none", color: "red" }} color={"inherit"}>
+          <Link href="/allcourses" color={"inherit"}>
+            All Courses
+          </Link>
+          <Link href="/admin" color={"inherit"}>
+            Admin
+          </Link>
+          <Link href="/allcourses" color={"inherit"}>
+            All Courses
+          </Link>
+          <Link href="/dashboard" color={"inherit"}>
+            Dashboard
+          </Link>
+          <Link href="/instructor" color={"inherit"}>
+            Instructors
+          </Link>
+          <Link href="/form" color={"inherit"}>
+            Form
+          </Link>
+        </Box>
         <Button color="inherit" onClick={handleClick} endIcon={<KeyboardArrowDownIcon />}>
           Explore
         </Button>
@@ -318,7 +337,6 @@ export default function MainHeader() {
             <MenuItem value="km">ភាសាខ្មែរ</MenuItem>
           </Select>
         </FormControl>
-
         {user ? (
           <>
             <Button
@@ -334,22 +352,52 @@ export default function MainHeader() {
                 Logout
               </Button>
             </form>
-            <Menu anchorEl={profileAnchorEl} open={profileOpen} onClose={handleProfileClose} sx={{ paddingRight: "2px" }}>
-              <MenuItem onClick={() => { handleProfileClose(); router.push('/profile'); }}>
+            <Menu
+              anchorEl={profileAnchorEl}
+              open={profileOpen}
+              onClose={handleProfileClose}
+              sx={{ paddingRight: "2px" }}
+            >
+              <MenuItem
+                onClick={() => {
+                  handleProfileClose();
+                  router.push("/profile");
+                }}
+              >
                 Profile
               </MenuItem>
-              <MenuItem onClick={() => { handleProfileClose(); router.push('/settings'); }}>
+              <MenuItem
+                onClick={() => {
+                  handleProfileClose();
+                  router.push("/settings");
+                }}
+              >
                 Settings
               </MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </>
         ) : (
-          <Link href="/login">
-            <Button color="inherit" variant="outlined" sx={{ color: "black", borderColor: "black", backgroundColor: "lightblue" }}>
-              Login
-            </Button>
-          </Link>
+          <>
+            <Link href="/login">
+              <Button
+                color="inherit"
+                variant="outlined"
+                sx={{ color: "black", borderColor: "black", backgroundColor: "lightblue" }}
+              >
+                Login
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button
+                color="inherit"
+                variant="outlined"
+                sx={{ color: "black", borderColor: "black", backgroundColor: "lightblue" }}
+              >
+                Sign up
+              </Button>
+            </Link>
+          </>
         )}
       </Toolbar>
     </WhiteAppBar>

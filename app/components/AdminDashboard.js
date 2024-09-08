@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 import {
   Box,
@@ -22,44 +22,78 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
-import DeleteIcon from '@mui/icons-material/Delete';
-
+  FormControl,
+  Select,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { createClient } from "../utils/supabase/client";
+import Modal from "./Modal";
 // Mock data for courses
-const initialCourses = [
-  { id: 1, title: 'Introduction to React', students: 150, status: 'Active', for: ['Staff', 'Fellow'] },
-  { id: 2, title: 'Advanced JavaScript', students: 120, status: 'Active', for: ['Staff'] },
-  { id: 3, title: 'Python for Beginners', students: 200, status: 'Inactive', for: ['Fellow'] },
-];
+// const initialCourses = [
+//   { id: 1, title: "Introduction to React", students: 150, status: "Active", for: ["Staff", "Fellow"] },
+//   { id: 2, title: "Advanced JavaScript", students: 120, status: "Active", for: ["Staff"] },
+//   { id: 3, title: "Python for Beginners", students: 200, status: "Inactive", for: ["Fellow"] },
+// ];
 
 // Mock data for users
 const initialUsers = [
-  { id: 1, firstName: 'John', lastName: 'Doe', email: 'john@example.com', role: 'None' },
-  { id: 2, firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com', role: 'Instructor' },
-  { id: 3, firstName: 'Bob', lastName: 'Johnson', email: 'bob@example.com', role: 'Staff' },
+  { id: 1, firstName: "John", lastName: "Doe", email: "john@example.com", role: "None" },
+  { id: 2, firstName: "Jane", lastName: "Smith", email: "jane@example.com", role: "Instructor" },
+  { id: 3, firstName: "Bob", lastName: "Johnson", email: "bob@example.com", role: "Staff" },
 ];
 
 // Mock data for access control
 const initialAccessControl = [
-  { role: 'Guest', dashboard: false, myLearning: false, discussion: false, community: false, profilePage: false, instructorPage: false },
-  { role: 'Fellow', dashboard: true, myLearning: false, discussion: false, community: false, profilePage: true, instructorPage: false },
-  { role: 'Instructor', dashboard: true, myLearning: true, discussion: false, community: false, profilePage: true, instructorPage: true },
-  { role: 'Staff', dashboard: true, myLearning: true, discussion: true, community: true, profilePage: true, instructorPage: true },
+  {
+    role: "Guest",
+    dashboard: false,
+    myLearning: false,
+    discussion: false,
+    community: false,
+    profilePage: false,
+    instructorPage: false,
+  },
+  {
+    role: "Fellow",
+    dashboard: true,
+    myLearning: false,
+    discussion: false,
+    community: false,
+    profilePage: true,
+    instructorPage: false,
+  },
+  {
+    role: "Instructor",
+    dashboard: true,
+    myLearning: true,
+    discussion: false,
+    community: false,
+    profilePage: true,
+    instructorPage: true,
+  },
+  {
+    role: "Staff",
+    dashboard: true,
+    myLearning: true,
+    discussion: true,
+    community: true,
+    profilePage: true,
+    instructorPage: true,
+  },
 ];
-
 
 // Mock Google Analytics data
 const mockAnalyticsData = {
   pageViews: 10000,
   uniqueVisitors: 5000,
-  averageSessionDuration: '00:03:45',
-  bounceRate: '45%',
+  averageSessionDuration: "00:03:45",
+  bounceRate: "45%",
 };
 
 const AdminDashboard = ({ onEdit, editingRow }) => {
-  const [courses, setCourses] = useState(initialCourses);
+  const [courses, setCourses] = useState([]);
   const [users, setUsers] = useState(initialUsers);
   const [tabValue, setTabValue] = useState(0);
   const [analyticsData, setAnalyticsData] = useState(null);
@@ -70,7 +104,9 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
   const [userIdToDelete, setUserIdToDelete] = useState(null);
   const [openCourseDelete, setOpenCourseDelete] = useState(false); // State for course deletion dialog
   const [courseIdToDelete, setCourseIdToDelete] = useState(null); // State to track which course to delete
-
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const supabase = createClient();
 
   useEffect(() => {
     // Simulating API call to Google Analytics
@@ -83,48 +119,69 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
 
     fetchAnalyticsData();
   }, []);
+  useEffect(() => {
+    fetchCourses();
+    fetchUsers();
+  }, []);
 
+  const fetchUsers = async () => {
+    const response = await supabase.from("users").select("*").limit(10);
+    if (response.error) {
+      console.error("Error fetching users:", response.error.message);
+    } else {
+      setUsers(response.data);
+    }
+  };
+  const fetchCourses = async () => {
+    const response = await supabase.from("courses").select("*").limit(10);
+    if (response.error) {
+      console.error("Error fetching courses:", response.error.message);
+    } else {
+      setCourses(response.data);
+    }
+  };
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
   const handleAccessControlChange = (role, permission) => {
     if (editingRole === role) {
-      setAccessControl(accessControl.map(ac =>
-        ac.role === role ? { ...ac, [permission]: !ac[permission] } : ac
-      ));
+      setAccessControl(accessControl.map(ac => (ac.role === role ? { ...ac, [permission]: !ac[permission] } : ac)));
     }
   };
 
-  const handleEditRole = (role) => {
+  const handleEditRole = role => {
     if (editingRole === role) {
       // Save changes
       setEditingRole(null);
       // Here you would typically save the changes to your backend
-      console.log('Saving changes for role:', role);
+      console.log("Saving changes for role:", role);
     } else {
       // Enter edit mode
       setEditingRole(role);
     }
   };
 
-  const handleEditClick = (user) => {
+  const handleEditClick = user => {
     setEditedUser({ ...user });
     onEdit(user.id);
   };
 
   const handleSave = () => {
     if (editedUser) {
-      setUsers((prevUsers) => 
-        prevUsers.map((user) => (user.id === editedUser.id ? editedUser : user))
-      );
+      setUsers(prevUsers => prevUsers.map(user => (user.id === editedUser.id ? editedUser : user)));
       setEditedUser(null);
     }
   };
 
-  const handleDeleteOpen = (id) => {
+  const handleDeleteOpen = id => {
     setUserIdToDelete(id);
     setOpen(true);
+  };
+  const handleClose = () => {
+    setSelectedCourse(null);
+    setSelectedCourse(null);
+    setOpen(false);
   };
 
   const handleDeleteClose = () => {
@@ -132,12 +189,12 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
   };
 
   const handleDeleteConfirm = () => {
-    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userIdToDelete));
+    setUsers(prevUsers => prevUsers.filter(user => user.id !== userIdToDelete));
     setOpen(false);
     setUserIdToDelete(null);
   };
 
-  const handleCourseDeleteOpen = (id) => {
+  const handleCourseDeleteOpen = id => {
     setCourseIdToDelete(id); // Set the course ID to delete
     setOpenCourseDelete(true); // Open the confirmation dialog
   };
@@ -147,92 +204,48 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
   };
 
   const handleCourseDeleteConfirm = () => {
-    setCourses((prevCourses) => prevCourses.filter((course) => course.id !== courseIdToDelete)); // Delete the course
+    setCourses(prevCourses => prevCourses.filter(course => course.id !== courseIdToDelete)); // Delete the course
     setOpenCourseDelete(false); // Close the dialog after deletion
     setCourseIdToDelete(null); // Clear the course ID
   };
 
+  const handleDeleteUser = async () => {
+    console.log("dlete triggered~!!!!");
+    //await deleteiiong
+
+    const { data, error } = await supabase.from("users").delete().match({ id: selectedUser.id });
+
+    if (error) {
+      console.error("Error deleting user:", error.message);
+    } else {
+      setOpen(false);
+      setSelectedUser(null);
+    }
+  };
+  const handleDelete = async () => {
+    console.log("dlete triggered~!!!!");
+    //await deleteiiong
+
+    const { data, error } = await supabase.from("courses").delete().match({ id: selectedCourse.id });
+
+    if (error) {
+      console.error("Error deleting course:", error.message);
+    } else {
+      setOpen(false);
+      setSelectedCourse(null);
+    }
+  };
+
   return (
     <Box sx={{ padding: 3 }}>
-// =======
-//     fetchAnalyticsData();
-//   }, []);
-
-//   useEffect(() => {
-//     fetchCourses();
-//     fetchUsers();
-//   }, []);
-
-//   const fetchUsers = async () => {
-//     const response = await supabase.from("users").select("*").limit(10);
-//     if (response.error) {
-//       console.error("Error fetching users:", response.error.message);
-//     } else {
-//       setUsers(response.data);
-//     }
-//   };
-//   const fetchCourses = async () => {
-//     const response = await supabase.from("courses").select("*").limit(10);
-//     if (response.error) {
-//       console.error("Error fetching courses:", response.error.message);
-//     } else {
-//       setCourses(response.data);
-//     }
-//   };
-//   const handleCourseForChange = (courseId, newValue) => {
-//     setCourses(courses.map(course => (course.id === courseId ? { ...course, for: newValue } : course)));
-//   };
-
-//   const handleAccessChange = (userId, newAccess) => {
-//     setUsers(users.map(user => (user.id === userId ? { ...user, access: newAccess } : user)));
-//   };
-
-//   const handleTabChange = (event, newValue) => {
-//     setTabValue(newValue);
-//   };
-
-//   const handleClose = () => {
-//     setSelectedCourse(null);
-//     setSelectedCourse(null);
-//     setOpen(false);
-//   };
-//   const handleDeleteUser = async () => {
-//     console.log("dlete triggered~!!!!");
-//     //await deleteiiong
-
-//     const { data, error } = await supabase.from("users").delete().match({ id: selectedUser.id });
-
-//     if (error) {
-//       console.error("Error deleting user:", error.message);
-//     } else {
-//       setOpen(false);
-//       setSelectedUser(null);
-//     }
-//   };
-//   const handleDelete = async () => {
-//     console.log("dlete triggered~!!!!");
-//     //await deleteiiong
-
-//     const { data, error } = await supabase.from("courses").delete().match({ id: selectedCourse.id });
-
-//     if (error) {
-//       console.error("Error deleting course:", error.message);
-//     } else {
-//       setOpen(false);
-//       setSelectedCourse(null);
-//     }
-//   };
-//   return (
-//     <Box sx={{ padding: 3 }}>
-//       <Modal
-//         open={open}
-//         handleClose={handleClose}
-//         selectedCourse={selectedCourse}
-//         selectedUser={selectedUser}
-//         handleDelete={handleDelete}
-//         handleDeleteUser={handleDeleteUser}
-//       />
-// >>>>>>> dev
+      <Modal
+        open={open}
+        handleClose={handleClose}
+        selectedCourse={selectedCourse}
+        selectedUser={selectedUser}
+        handleDelete={handleDelete}
+        handleDeleteUser={handleDeleteUser}
+      />
       <Typography variant="h4" gutterBottom>
         Admin Dashboard
       </Typography>
@@ -241,7 +254,6 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
         <Tab label="Users" />
         <Tab label="Analytics" />
         <Tab label="Access Control" />
-
       </Tabs>
       {tabValue === 0 && (
         <Paper>
@@ -249,8 +261,6 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>ID</TableCell>
-
                   <TableCell>Title</TableCell>
                   <TableCell>Students</TableCell>
                   <TableCell>Status</TableCell>
@@ -259,60 +269,38 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {courses.map((course) => (
+                {courses.map(course => (
                   <TableRow key={course.id}>
-                    <TableCell>{course.id}</TableCell>
                     <TableCell>{course.title}</TableCell>
                     <TableCell>{course.students}</TableCell>
                     <TableCell>{course.status}</TableCell>
-                    <TableCell>{course.for.join(', ')}</TableCell>
                     <TableCell>
+                      <FormControl fullWidth>
+                        {/* <Select
+                          multiple
+                          value={course.for}
+                          onChange={e => handleCourseForChange(course.id, e.target.value)}
+                          size="small"
+                          renderValue={selected => selected.join(", ")}
+                        > */}
+                        {/* {courseForOptions.map(option => (
+                            <MenuItem key={option} value={option}>
+                              {option}
+                            </MenuItem>
+                          ))} */}
+                        {/* </Select> */}
+                      </FormControl>
+                    </TableCell>
+                    <TableCell>
+                      <Button size="small">Edit</Button>
                       <Button
-                        variant="contained"
-                        startIcon={<EditIcon />}
-                        onClick={() => handleEditClick(course)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="contained"
+                        size="small"
                         color="error"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => handleCourseDeleteOpen(course.id)} // Open confirmation dialog for course deletion
                         sx={{ ml: 1 }}
-// =======
-//                 {courses.map(course => (
-//                   <TableRow key={course.id}>
-//                     <TableCell>{course.title}</TableCell>
-//                     <TableCell>{course.students}</TableCell>
-//                     <TableCell>{course.status}</TableCell>
-//                     <TableCell>
-//                       <FormControl fullWidth>
-//                         {/* <Select
-//                           multiple
-//                           value={course.for}
-//                           onChange={e => handleCourseForChange(course.id, e.target.value)}
-//                           size="small"
-//                           renderValue={selected => selected.join(", ")}
-//                         > */}
-//                         {/* {courseForOptions.map(option => (
-//                             <MenuItem key={option} value={option}>
-//                               {option}
-//                             </MenuItem>
-//                           ))} */}
-//                         {/* </Select> */}
-//                       </FormControl>
-//                     </TableCell>
-//                     <TableCell>
-//                       <Button size="small">Edit</Button>
-//                       <Button
-//                         size="small"
-//                         color="error"
-//                         onClick={() => {
-//                           setSelectedCourse(course);
-//                           setOpen(true);
-//                         }}
-// >>>>>>> dev
+                        onClick={() => {
+                          setSelectedCourse(course);
+                          setOpen(true);
+                        }}
                       >
                         Delete
                       </Button>
@@ -340,15 +328,15 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.map((user) => (
+                {users.map(user => (
                   <TableRow key={user.id}>
                     <TableCell>{user.id}</TableCell>
                     <TableCell>
                       {editingRow === user.id ? (
                         <input
                           type="text"
-                          value={editedUser ? editedUser.firstName : ''}
-                          onChange={(e) => setEditedUser({ ...editedUser, firstName: e.target.value })}
+                          value={editedUser ? editedUser.firstName : ""}
+                          onChange={e => setEditedUser({ ...editedUser, firstName: e.target.value })}
                         />
                       ) : (
                         user.firstName
@@ -358,8 +346,8 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
                       {editingRow === user.id ? (
                         <input
                           type="text"
-                          value={editedUser ? editedUser.lastName : ''}
-                          onChange={(e) => setEditedUser({ ...editedUser, lastName: e.target.value })}
+                          value={editedUser ? editedUser.lastName : ""}
+                          onChange={e => setEditedUser({ ...editedUser, lastName: e.target.value })}
                         />
                       ) : (
                         user.lastName
@@ -369,8 +357,8 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
                       {editingRow === user.id ? (
                         <input
                           type="text"
-                          value={editedUser ? editedUser.email : ''}
-                          onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
+                          value={editedUser ? editedUser.email : ""}
+                          onChange={e => setEditedUser({ ...editedUser, email: e.target.value })}
                         />
                       ) : (
                         user.email
@@ -380,8 +368,8 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
                       {editingRow === user.id ? (
                         <input
                           type="text"
-                          value={editedUser ? editedUser.role : ''}
-                          onChange={(e) => setEditedUser({ ...editedUser, role: e.target.value })}
+                          value={editedUser ? editedUser.role : ""}
+                          onChange={e => setEditedUser({ ...editedUser, role: e.target.value })}
                         />
                       ) : (
                         user.role
@@ -392,58 +380,22 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
                         <Button onClick={handleSave}>Save</Button>
                       ) : (
                         <>
-                          <Button
-                            variant="contained"
-                            startIcon={<EditIcon />}
-                            onClick={() => handleEditClick(user)}
-                          >
+                          <Button variant="contained" startIcon={<EditIcon />} onClick={() => handleEditClick(user)}>
                             Edit
                           </Button>
                           <Button
                             variant="contained"
                             color="error"
                             startIcon={<DeleteIcon />}
-                            onClick={() => handleDeleteOpen(user.id)}
+                            onClick={() => {
+                              setOpen(true);
+                              setSelectedUser(user);
+                            }}
                           >
                             Delete
                           </Button>
                         </>
                       )}
-// =======
-//                 {users.map(user => (
-//                   <TableRow key={user.id}>
-//                     <TableCell>
-//                       {user.firstName} {user.lastName}
-//                     </TableCell>
-//                     <TableCell>{user.email}</TableCell>
-//                     <TableCell>
-//                       <FormControl fullWidth>
-//                         <Select
-//                           value={user.access}
-//                           onChange={e => handleAccessChange(user.id, e.target.value)}
-//                           size="small"
-//                         >
-//                           {/* {accessLevels.map(level => (
-//                             <MenuItem key={level} value={level}>
-//                               {level}
-//                             </MenuItem>
-//                           ))} */}
-//                         </Select>
-//                       </FormControl>
-//                     </TableCell>
-//                     <TableCell>
-//                       <Button size="small">Edit</Button>
-//                       <Button
-//                         size="small"
-//                         color="error"
-//                         onClick={() => {
-//                           setOpen(true);
-//                           setSelectedUser(user);
-//                         }}
-//                       >
-//                         Delete
-//                       </Button>
-// >>>>>>> dev
                     </TableCell>
                   </TableRow>
                 ))}
@@ -454,33 +406,31 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
       )}
       {tabValue === 2 && (
         <Paper sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom>Analytics</Typography>
+          <Typography variant="h6" gutterBottom>
+            Analytics
+          </Typography>
           {analyticsData ? (
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={3}>
-                <Paper sx={{ p: 2, textAlign: 'center' }}>
-
+                <Paper sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="h6">{analyticsData.pageViews}</Typography>
                   <Typography variant="body2">Page Views</Typography>
                 </Paper>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Paper sx={{ p: 2, textAlign: 'center' }}>
-
+                <Paper sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="h6">{analyticsData.uniqueVisitors}</Typography>
                   <Typography variant="body2">Unique Visitors</Typography>
                 </Paper>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Paper sx={{ p: 2, textAlign: 'center' }}>
-
+                <Paper sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="h6">{analyticsData.averageSessionDuration}</Typography>
                   <Typography variant="body2">Avg. Session Duration</Typography>
                 </Paper>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Paper sx={{ p: 2, textAlign: 'center' }}>
-
+                <Paper sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="h6">{analyticsData.bounceRate}</Typography>
                   <Typography variant="body2">Bounce Rate</Typography>
                 </Paper>
@@ -508,48 +458,48 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {accessControl.map((ac) => (
+                {accessControl.map(ac => (
                   <TableRow key={ac.role}>
                     <TableCell>{ac.role}</TableCell>
                     <TableCell>
                       <Checkbox
                         checked={ac.dashboard}
-                        onChange={() => handleAccessControlChange(ac.role, 'dashboard')}
+                        onChange={() => handleAccessControlChange(ac.role, "dashboard")}
                         disabled={editingRole !== ac.role}
                       />
                     </TableCell>
                     <TableCell>
                       <Checkbox
                         checked={ac.myLearning}
-                        onChange={() => handleAccessControlChange(ac.role, 'myLearning')}
+                        onChange={() => handleAccessControlChange(ac.role, "myLearning")}
                         disabled={editingRole !== ac.role}
                       />
                     </TableCell>
                     <TableCell>
                       <Checkbox
                         checked={ac.discussion}
-                        onChange={() => handleAccessControlChange(ac.role, 'discussion')}
+                        onChange={() => handleAccessControlChange(ac.role, "discussion")}
                         disabled={editingRole !== ac.role}
                       />
                     </TableCell>
                     <TableCell>
                       <Checkbox
                         checked={ac.community}
-                        onChange={() => handleAccessControlChange(ac.role, 'community')}
+                        onChange={() => handleAccessControlChange(ac.role, "community")}
                         disabled={editingRole !== ac.role}
                       />
                     </TableCell>
                     <TableCell>
                       <Checkbox
                         checked={ac.profilePage}
-                        onChange={() => handleAccessControlChange(ac.role, 'profilePage')}
+                        onChange={() => handleAccessControlChange(ac.role, "profilePage")}
                         disabled={editingRole !== ac.role}
                       />
                     </TableCell>
                     <TableCell>
                       <Checkbox
                         checked={ac.instructorPage}
-                        onChange={() => handleAccessControlChange(ac.role, 'instructorPage')}
+                        onChange={() => handleAccessControlChange(ac.role, "instructorPage")}
                         disabled={editingRole !== ac.role}
                       />
                     </TableCell>
@@ -559,7 +509,7 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
                         startIcon={editingRole === ac.role ? <SaveIcon /> : <EditIcon />}
                         onClick={() => handleEditRole(ac.role)}
                       >
-                        {editingRole === ac.role ? 'Save' : 'Edit'}
+                        {editingRole === ac.role ? "Save" : "Edit"}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -569,7 +519,7 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
           </TableContainer>
         </Paper>
       )}
-      <Dialog open={open} onClose={handleDeleteClose}>
+      {/* <Dialog open={open} onClose={handleDeleteClose}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -586,7 +536,7 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
         </DialogActions>
       </Dialog>
       {/* Confirmation Dialog for Course Deletion */}
-      <Dialog open={openCourseDelete} onClose={handleCourseDeleteClose}>
+      {/* <Dialog open={openCourseDelete} onClose={handleCourseDeleteClose}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -601,8 +551,7 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
             Delete
           </Button>
         </DialogActions>
-      </Dialog>
-
+      </Dialog> */}{" "}
     </Box>
   );
 };
