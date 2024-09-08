@@ -5,7 +5,7 @@ import { Box, Typography, Button, Divider, InputLabel, TextField } from "@mui/ma
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "../utils/supabase/server";
-import { loginWithEmail } from "./actions";
+import { signUpWithEmail } from "./actions";
 export default function LoginPage() {
   const loginWithGoogle = async e => {
     "use server";
@@ -25,32 +25,6 @@ export default function LoginPage() {
       return redirect(data.url);
     }
   };
-
-  // const loginWithEmail = async () => {
-  //   "use client";
-  //   const supabase = createClient();
-
-  //   const { data, error } = await supabase.auth.signInWithPassword({
-  //     email: "test@test.com",
-  //     password: "test",
-  //     options: {
-  //       redirectTo: "/dashboard",
-  //     },
-  //   });
-  //   // const { error } = await supabase.auth.signInWithPassword({
-  //   //   email,
-  //   //   password,
-  //   //   options: {
-  //   //     redirectTo: "/dashboard",
-  //   //   },
-  //   // });
-
-  //   if (error) {
-  //     console.log("error", error);
-  //     return error;
-  //   }
-  //   // return redirect(data.url);
-  // };
 
   function GithubIcon(props) {
     return (
@@ -132,15 +106,15 @@ export default function LoginPage() {
         <Box textAlign="center" maxWidth="md" spacing={6}>
           <Box mb={2}>
             <Typography variant="h3" component="h3" fontWeight="bold">
-              Welcome back
+              Welcome!
             </Typography>
-            <Typography color="textSecondary">Sign in to your account to continue</Typography>
+            <Typography color="textSecondary">Sign up to your account to continue</Typography>
           </Box>
 
           <Box spacing={4}>
             <form action={loginWithGoogle}>
               <Button variant="outlined" fullWidth startIcon={<GithubIcon />} type="submit">
-                Sign in with Google
+                Sign up with Google
               </Button>
             </form>
             <Box position="relative" my={2}>
@@ -160,7 +134,11 @@ export default function LoginPage() {
               </Box>
             </Box>
 
-            <form action={loginWithEmail}>
+            <form action={signUpWithEmail}>
+              <Box mb={2}>
+                <InputLabel htmlFor="name">Full Name</InputLabel>
+                <TextField id="name" type="text" placeholder="Time Jones" required fullWidth />
+              </Box>
               <Box mb={2}>
                 <InputLabel htmlFor="email">Email</InputLabel>
                 <TextField id="email" type="email" placeholder="m@example.com" required fullWidth />
@@ -170,7 +148,7 @@ export default function LoginPage() {
                 <TextField id="password" type="password" required fullWidth />
               </Box>
               <Button type="submit" variant="contained" fullWidth>
-                Sign in
+                Sign Up
               </Button>
             </form>
           </Box>

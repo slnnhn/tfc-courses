@@ -16,6 +16,7 @@ const AdminPage = () => {
     <>
       <AdminDashboard onEdit={handleEdit} editingRow={editingRow} />
     </>
+
   );
 };
 

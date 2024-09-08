@@ -197,6 +197,7 @@ export default function DashboardPage() {
     if (error) console.log("error", error);
     else setCourses(data);
   };
+
   useEffect(() => {
     fetchCourses();
   }, []);
@@ -394,6 +395,7 @@ export default function DashboardPage() {
       {/* Remove course cards display */}
           
     </Grid>
+
           </>
         );
       case 1: // My Learning tab

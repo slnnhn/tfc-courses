@@ -139,7 +139,6 @@ export default function MainHeader() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      console.log(user);
 
       if (user) {
         setUser(user);
@@ -278,6 +277,34 @@ export default function MainHeader() {
         </LogoContainer>
         <Box sx={{ flexGrow: 1 }} /> {/* This will push the following items to the right */}
         
+
+        <Link href="/allcourses"> All Courses</Link>
+        <Link href="/allcourses"> Admin Page</Link>
+        <Button color="inherit" onClick={handleClick} endIcon={<KeyboardArrowDownIcon />}>
+          Explore
+        </Button>
+        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+          <MenuItem onClick={handleClose}>Option 1</MenuItem>
+          <MenuItem onClick={handleClose}>Option 2</MenuItem>
+          <MenuItem onClick={handleClose}>Option 3</MenuItem>
+        </Menu>
+        {/* <div style={{ position: "relative", marginLeft: "50px", marginRight: "px" }}>
+          <div
+            style={{ position: "absolute", display: "flex", alignItems: "center", height: "100%", padding: "0 10px" }}
+          >
+            <SearchIcon />
+          </div>
+          <InputBase
+            placeholder="Search…"
+            inputProps={{ "aria-label": "search" }}
+            style={{
+              paddingLeft: "40px",
+              color: "inherit",
+              backgroundColor: "rgba(255, 255, 255, 0.15)",
+              borderRadius: "4px",
+            }}
+          />
+        </div> */}
         <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
           <Select
             value={language}
@@ -300,7 +327,7 @@ export default function MainHeader() {
               startIcon={<Avatar sx={{ width: 32, height: 32 }} />}
               endIcon={<KeyboardArrowDownIcon />}
             >
-              {user.user_metadata.full_name.split(" ")[0]}
+              {user?.user_metadata?.full_name?.split(" ")[0]}
             </Button>
             <form onSubmit={handleLogout}>
               <Button type="submit" variant="contained" sx={{ backgroundColor: "lightblue", color: "black" }}>
