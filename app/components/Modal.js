@@ -19,6 +19,7 @@ export default function ReusableModal({ open, handleClose, selectedCourse, selec
   const { title, description } = selectedCourse || {};
   const { firstName, lastName, email } = selectedUser || {};
 
+  console.log("title", description);
   return (
     <Modal open={open} onClose={handleClose}>
       <Box
