@@ -22,6 +22,7 @@ import {
   MenuItem,
   Select,
   InputAdornment,
+  Pagination,
 } from "@mui/material";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -251,34 +252,51 @@ export default function DashboardPage() {
     </Paper>
   );
 
-  const CourseSection = ({ title, courses }) => (
-    <>
-      <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
-        {title}
-      </Typography>
-      <Grid container spacing={4}>
-        {courses.map(course => (
-          <Grid item key={course.id} xs={12} sm={6} md={3}>
-            <StyledCard>
-              <StyledCardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                  {course.title}
-                </Typography>
-                <Button size="small" color="primary">
-                  View Course
-                </Button>
-              </StyledCardContent>
-            </StyledCard>
-          </Grid>
-        ))}
-      </Grid>
-      <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 2 }}>
-        <Button variant="outlined" color="primary" onClick={() => handleViewMore(title)}>
-          View More
-        </Button>
-      </Box>
-    </>
-  );
+  const CourseSection = ({ title, courses }) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const coursesPerPage = 20;
+
+    // Logic to calculate the index of the first and last course on the current page
+    const indexOfLastCourse = currentPage * coursesPerPage;
+    const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
+    const currentCourses = courses.slice(indexOfFirstCourse, indexOfLastCourse);
+
+    // Logic to handle page change
+    const handlePageChange = (event, page) => {
+      setCurrentPage(page);
+    };
+
+    return (
+      <>
+        <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
+          {title}
+        </Typography>
+        <Grid container spacing={4}>
+          {currentCourses.map(course => (
+            <Grid item key={course.id} xs={12} sm={6} md={3}>
+              <StyledCard>
+                <StyledCardContent>
+                  <Typography gutterBottom variant="h6" component="div">
+                    {course.title}
+                  </Typography>
+                  <Button size="small" color="primary">
+                    View Course
+                  </Button>
+                </StyledCardContent>
+              </StyledCard>
+            </Grid>
+          ))}
+        </Grid>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <Pagination
+            count={Math.ceil(courses.length / coursesPerPage)}
+            page={currentPage}
+            onChange={handlePageChange}
+          />
+        </Box>
+      </>
+    );
+  };
 
   const CourseList = ({ courses, isProgress = false }) => (
     <Box>
