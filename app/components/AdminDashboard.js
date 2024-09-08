@@ -319,8 +319,11 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Name</TableCell>
+                  <TableCell>ID</TableCell>
+                  <TableCell>First Name</TableCell>
+                  <TableCell>Last Name</TableCell>
                   <TableCell>Email</TableCell>
+                  <TableCell>Role</TableCell>
                   <TableCell>Access Control</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
@@ -328,37 +331,72 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
               <TableBody>
                 {users.map(user => (
                   <TableRow key={user.id}>
+                    <TableCell>{user.id}</TableCell>
                     <TableCell>
-                      {user.firstName} {user.lastName}
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <FormControl fullWidth>
-                        <Select
-                          value={user.access}
-                          onChange={e => handleAccessChange(user.id, e.target.value)}
-                          size="small"
-                        >
-                          {/* {accessLevels.map(level => (
-                            <MenuItem key={level} value={level}>
-                              {level}
-                            </MenuItem>
-                          ))} */}
-                        </Select>
-                      </FormControl>
+                      {editingRow === user.id ? (
+                        <input
+                          type="text"
+                          value={editedUser ? editedUser.firstName : ""}
+                          onChange={e => setEditedUser({ ...editedUser, firstName: e.target.value })}
+                        />
+                      ) : (
+                        user.firstName
+                      )}
                     </TableCell>
                     <TableCell>
-                      <Button size="small">Edit</Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => {
-                          setOpen(true);
-                          setSelectedUser(user);
-                        }}
-                      >
-                        Delete
-                      </Button>
+                      {editingRow === user.id ? (
+                        <input
+                          type="text"
+                          value={editedUser ? editedUser.lastName : ""}
+                          onChange={e => setEditedUser({ ...editedUser, lastName: e.target.value })}
+                        />
+                      ) : (
+                        user.lastName
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editingRow === user.id ? (
+                        <input
+                          type="text"
+                          value={editedUser ? editedUser.email : ""}
+                          onChange={e => setEditedUser({ ...editedUser, email: e.target.value })}
+                        />
+                      ) : (
+                        user.email
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editingRow === user.id ? (
+                        <input
+                          type="text"
+                          value={editedUser ? editedUser.role : ""}
+                          onChange={e => setEditedUser({ ...editedUser, role: e.target.value })}
+                        />
+                      ) : (
+                        user.role
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editingRow === user.id ? (
+                        <Button onClick={handleSave}>Save</Button>
+                      ) : (
+                        <>
+                          <Button variant="contained" startIcon={<EditIcon />} onClick={() => handleEditClick(user)}>
+                            Edit
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            startIcon={<DeleteIcon />}
+                            onClick={() => {
+                              setOpen(true);
+                              setSelectedUser(user);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
