@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 export const signUpWithEmail = async (email, password) => {
   const supabase = createClient();
   const { error } = await supabase.auth.signUp({
-    email: "test@test.com",
-    password: "123456",
+    email: email,
+    password: password,
   });
 
   if (error) {
