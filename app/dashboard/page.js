@@ -210,6 +210,7 @@ export default function DashboardPage() {
     }
     setCurUser(user);
   };
+  
   const fetchCourses = async () => {
     const { data, error } = await supabase.from("courses").select("*");
     if (error) console.log("error", error);
@@ -285,6 +286,10 @@ export default function DashboardPage() {
     const handlePageChange = (event, page) => {
       setCurrentPage(page);
     };
+    // Navigate to course detail page
+    const handleViewCourse = (courseId) => {
+      router.push(`/courses/${courseId}`);
+    };
 
     return (
       <>
@@ -299,7 +304,7 @@ export default function DashboardPage() {
                   <Typography gutterBottom variant="h6" component="div">
                     {course.title}
                   </Typography>
-                  <Button size="small" color="primary">
+                  <Button size="small" color="primary" onClick={() => handleViewCourse(course.id)}>
                     View Course
                   </Button>
                 </StyledCardContent>
@@ -307,7 +312,7 @@ export default function DashboardPage() {
             </Grid>
           ))}
         </Grid>
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", m:5}}>
           <Pagination
             count={Math.ceil(courses.length / coursesPerPage)}
             page={currentPage}
