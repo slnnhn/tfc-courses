@@ -235,7 +235,6 @@ const AdminDashboard = ({ onEdit, editingRow }) => {
       setSelectedCourse(null);
     }
   };
-  console.log("selectedCourse", selectedCourse);
 
   return (
     <Box sx={{ padding: 3 }}>
