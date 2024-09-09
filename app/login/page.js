@@ -1,57 +1,74 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 
 import { Box, Typography, Button, Divider, InputLabel, TextField } from "@mui/material";
-
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { createClient } from "../utils/supabase/server";
-import { loginWithEmail } from "./actions";
+import { createClient } from "../utils/supabase/client";
+import { useRouter } from "next/navigation";
 export default function LoginPage() {
-  const loginWithGoogle = async e => {
-    "use server";
-    const supabase = createClient();
-    const origin = headers().get("origin");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+  });
+  const route = useRouter();
+  const loginWithGoogle = async () => {
+    try {
+      const response = await fetch("/api/login", { method: "POST" });
+      const data = await response.json();
 
-    const { error, data } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      console.log("error is", error);
-    } else {
-      return redirect(data.url);
+      if (response.ok) {
+        window.location.href = data.url; // Redirect to Google OAuth URL
+      } else {
+        console.error("Login error:", data.error);
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
     }
   };
 
-  // const loginWithEmail = async () => {
-  //   "use client";
-  //   const supabase = createClient();
+  const loginInWithEmail = async () => {
+    const supabase = createClient();
+    const { email, password } = formData;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  //   const { data, error } = await supabase.auth.signInWithPassword({
-  //     email: "test@test.com",
-  //     password: "test",
-  //     options: {
-  //       redirectTo: "/dashboard",
-  //     },
-  //   });
-  //   // const { error } = await supabase.auth.signInWithPassword({
-  //   //   email,
-  //   //   password,
-  //   //   options: {
-  //   //     redirectTo: "/dashboard",
-  //   //   },
-  //   // });
+    if (error) {
+      console.error("Error signing up:", error.message);
+    }
 
-  //   if (error) {
-  //     console.log("error", error);
-  //     return error;
-  //   }
-  //   // return redirect(data.url);
-  // };
+    if (data) {
+      route.push("/dashboard");
+    }
+    // if (newUser) {
+    //   const { data, error } = await supabase.from("users").insert([
+    //     {
+    //       id: newUser.user.id,
+    //       firstName,
+    //       lastName,
+    //       created_at: new Date(),
+    //       email: newUser.user.email,
+    //       role: "Guest",
+    //     },
+    //   ]);
 
+    //   if (error) {
+    //     console.error("Error creating user:", error.message);
+    //   }
+
+    //   route.push("/dashboard");
+    // }
+  };
+
+  const handleInputChange = e => {
+    const { id, value } = e.target;
+    setFormData({
+      ...formData,
+      [id]: value,
+    });
+  };
   function GithubIcon(props) {
     return (
       <svg
@@ -160,14 +177,29 @@ export default function LoginPage() {
               </Box>
             </Box>
 
-            <form action={loginWithEmail}>
+            <form action={loginInWithEmail}>
               <Box mb={2}>
                 <InputLabel htmlFor="email">Email</InputLabel>
-                <TextField id="email" type="email" placeholder="m@example.com" required fullWidth />
+                <TextField
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  fullWidth
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
               </Box>
               <Box mb={2}>
                 <InputLabel htmlFor="password">Password</InputLabel>
-                <TextField id="password" type="password" required fullWidth />
+                <TextField
+                  id="password"
+                  type="password"
+                  required
+                  fullWidth
+                  value={formData.password}
+                  onChange={handleInputChange}
+                />
               </Box>
               <Button type="submit" variant="contained" fullWidth>
                 Sign in
