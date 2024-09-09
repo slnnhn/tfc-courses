@@ -1,28 +1,70 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 
 import { Box, Typography, Button, Divider, InputLabel, TextField } from "@mui/material";
 
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { createClient } from "../utils/supabase/server";
-import { signUpWithEmail } from "./actions";
+import { createClient } from "../utils/supabase/client";
+import { useRouter } from "next/navigation";
 export default function LoginPage() {
-  const loginWithGoogle = async e => {
-    "use server";
-    const supabase = createClient();
-    const origin = headers().get("origin");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+  });
 
-    const { error, data } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+  const route = useRouter();
+  const loginWithGoogle = async () => {
+    try {
+      const response = await fetch("/api/login", { method: "POST" });
+      const data = await response.json();
+
+      if (response.ok) {
+        window.location.href = data.url; // Redirect to Google OAuth URL
+      } else {
+        console.error("Login error:", data.error);
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  };
+
+  const signUpWithEmail = async (email, password, firstName, lastName) => {
+    const supabase = createClient();
+    const { data: newUser, error } = await supabase.auth.signUp({
+      email,
+      password,
       options: {
-        redirectTo: `${origin}/auth/callback`,
+        data: {
+          firstName,
+          lastName,
+        },
       },
     });
+    // if (error) {
+    //   console.error("Error signing up:", error.message);
+    //   // if (error.message === "A user with this email already exists.") {
+    //   //   alert("A user with this email already exists. try logging in");
+    //   //   route.push("/login");
+    //   // }
+    // }
+    if (newUser) {
+      const { data, error } = await supabase.from("users").insert([
+        {
+          id: newUser.user.id,
+          firstName,
+          lastName,
+          created_at: new Date(),
+          email: newUser.user.email,
+          role: "Guest",
+        },
+      ]);
 
-    if (error) {
-      console.log("error is", error);
-    } else {
-      return redirect(data.url);
+      if (error) {
+        console.error("Error creating user:", error.message);
+      }
+
+      route.push("/dashboard");
     }
   };
 
@@ -45,43 +87,19 @@ export default function LoginPage() {
       </svg>
     );
   }
+  const handleSubmit = async e => {
+    e.preventDefault();
+    const { email, password, firstName, lastName } = formData;
+    await signUpWithEmail(email, password, firstName, lastName);
+  };
 
-  // <Box
-  //   display="flex"
-  //   flexDirection="column"
-  //   alignItems="center"
-  //   justifyContent="start"
-  //   minHeight="100vh"
-  //   p={3}
-  //   bgcolor="#f5f5f5"
-  // >
-  //   <Box
-  //     display="flex"
-  //     flexDirection="column"
-  //     alignItems="center"
-  //     maxWidth={400}
-  //     p={4}
-  //     bgcolor="#ffffff"
-  //     borderRadius={2}
-  //     boxShadow={3}
-  //   >
-  //     <form action={loginWithGoogle}>
-  //       <Typography variant="h4" component="h1" gutterBottom>
-  //         Sign in with Google
-  //       </Typography>
-  //       <Typography variant="body1" align="center" color="textSecondary" paragraph>
-  //         Sign in with your Google account
-  //       </Typography>
-  //       <Typography variant="body2" align="center" color="textSecondary" paragraph>
-  //         By signing in you agree to our terms and conditions and privacy policy
-  //       </Typography>
-
-  //       <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-  //         Sign in with Google
-  //       </Button>
-  //     </form>
-  //   </Box>
-  // </Box>
+  const handleInputChange = e => {
+    const { id, value } = e.target;
+    setFormData({
+      ...formData,
+      [id]: value,
+    });
+  };
 
   return (
     <Box
@@ -134,20 +152,51 @@ export default function LoginPage() {
               </Box>
             </Box>
 
-            <form action={signUpWithEmail}>
+            <form onSubmit={handleSubmit}>
               <Box mb={2}>
                 <InputLabel htmlFor="firstName">First Name</InputLabel>
-                <TextField id="firstName" type="text" placeholder="first name" required fullWidth />
+                <TextField
+                  id="firstName"
+                  type="text"
+                  placeholder="First name"
+                  required
+                  fullWidth
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                />
                 <InputLabel htmlFor="lastName">Last Name</InputLabel>
-                <TextField id="lastName" type="text" placeholder="last name" required fullWidth />
+                <TextField
+                  id="lastName"
+                  type="text"
+                  placeholder="Last name"
+                  required
+                  fullWidth
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                />
               </Box>
               <Box mb={2}>
                 <InputLabel htmlFor="email">Email</InputLabel>
-                <TextField id="email" type="email" placeholder="m@example.com" required fullWidth />
+                <TextField
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  fullWidth
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
               </Box>
               <Box mb={2}>
                 <InputLabel htmlFor="password">Password</InputLabel>
-                <TextField id="password" type="password" required fullWidth />
+                <TextField
+                  id="password"
+                  type="password"
+                  required
+                  fullWidth
+                  value={formData.password}
+                  onChange={handleInputChange}
+                />
               </Box>
               <Button type="submit" variant="contained" fullWidth>
                 Sign Up

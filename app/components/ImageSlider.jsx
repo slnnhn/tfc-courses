@@ -16,7 +16,8 @@ const ImageSlider = () => {
     {
       image: "/img2.jpg",
       title: "Our mission",
-      description: "Enlist and develop the nation's most promising future leaders to expand educational opportunities for children all across Cambodia.",
+      description:
+        "Enlist and develop the nation's most promising future leaders to expand educational opportunities for children all across Cambodia.",
       btn1Title: "What We Do",
       btn1Href: "",
       btn2Title: "Become A Fellow",
@@ -25,7 +26,8 @@ const ImageSlider = () => {
     {
       image: "/img3.jpg",
       title: "Who we are",
-      description: "We are homegrown, independent non-profit organiztion partnered with the Ministry of Education, Youth and Sport of Cambodia to increase educational opportunities in the country.",
+      description:
+        "We are homegrown, independent non-profit organiztion partnered with the Ministry of Education, Youth and Sport of Cambodia to increase educational opportunities in the country.",
       btn1Title: "Learn More",
       btn1Href: "",
       btn2Title: "Become A Fellow",
@@ -45,11 +47,11 @@ const ImageSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const handleNext = () => {
-    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    setCurrentSlide(prev => (prev === slides.length - 1 ? 0 : prev + 1));
   };
 
   const handlePrev = () => {
-    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+    setCurrentSlide(prev => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
   return (
@@ -103,17 +105,15 @@ const ImageSlider = () => {
             size="large"
             sx={{ marginRight: "10px" }}
             href={slides[currentSlide].btn1Href}
-            passHref
           >
             {slides[currentSlide].btn1Title}
           </Button>
-          <Button 
-            variant="outlined" 
-            bgcolor="secondary" 
-            color="white" 
+          <Button
+            variant="outlined"
+            bgcolor="secondary"
+            color="white"
             size="large"
             href={slides[currentSlide].btn2Href}
-            passHref
           >
             {slides[currentSlide].btn2Title}
           </Button>

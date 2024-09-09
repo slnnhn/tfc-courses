@@ -140,11 +140,44 @@ export default function MainHeader() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (user) {
-        setUser(user);
+      if (!user) {
+        setUser(null);
       } else {
-        console.log("no user");
+        await supabase
+          .from("users")
+          .select()
+          .eq("id", user?.id)
+          .then(({ data, error }) => {
+            console.log("data", data);
+            if (error) {
+              console.log("error", error);
+              setUser(null);
+            } else {
+              setUser(data[0]);
+            }
+          });
       }
+
+      // await supabase
+      //   .from("users")
+      //   .select()
+      //   .eq("id", user?.id)
+      //   .then(({ data, error }) => {
+      //     if (error) {
+      //       console.log("error", error);
+      //       setUser(null);
+      //     } else {
+      //       console.log("data", data);
+      //       setUser(data[0]);
+      //     }
+
+      // console.log("user", user);
+      // if (user) {
+      //   setUser(user);
+      // } else {
+      //   console.log("no user");
+      // }
+      // });
     };
     getUser();
   }, []);
@@ -264,6 +297,7 @@ export default function MainHeader() {
     router.push("/");
   };
 
+  console.log("user", user);
   return (
     <WhiteAppBar
       position="static"
@@ -345,7 +379,7 @@ export default function MainHeader() {
               startIcon={<Avatar sx={{ width: 32, height: 32 }} />}
               endIcon={<KeyboardArrowDownIcon />}
             >
-              {user?.user_metadata?.full_name?.split(" ")[0]}
+              {user.user_metadata?.full_name?.split(" ")[0] || user.firstName}
             </Button>
             <form onSubmit={handleLogout}>
               <Button type="submit" variant="contained" sx={{ backgroundColor: "lightblue", color: "black" }}>
